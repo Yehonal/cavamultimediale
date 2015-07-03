@@ -1,10 +1,4 @@
-
-function HWC_BODY_INTRO_PAGE () {
-    return "intro";
-}
-function HWC_BODY_MAIN_PAGE () {
-    return "main";
-}
+'use strict';
 
 hwc.include([
     "hwc!{CMDPATH_JS}tmpl/prototype/TemplateClass.js",
@@ -20,7 +14,7 @@ hwc.include([
         }),
         $.private({
             lang: null,
-            page: HWC_BODY_INTRO_PAGE()
+            page: "intro"
         }),
         $.public({
             __construct: function (parent, childs, opt) {
@@ -61,7 +55,7 @@ hwc.include([
                             /**
                              *  LEFT BOTTOM BAR AND OTHER CHANGES ON SUBPAGES
                              */
-                            if (that._i.page !== HWC_BODY_MAIN_PAGE()) {
+                            if (that._i.page !== "main") {
                                 $.Browser.JQ("#bottom-left").empty();
                                 $.Browser.JQ("#bottom-center").empty();
                                 $.Browser.Loader.load($.const.CMDPATH_SRC + "css/tmpl/body-subpage.css")
@@ -71,8 +65,8 @@ hwc.include([
                                                 $.Browser.JQ("#bottom-left")
                                                     .append("<div><a href='javascript:void(0)' id='go-back'>" + json["back"] + "</a></div>"
                                                         + "<div><a id='go-menu'>" + json["menu"] + "</a></div>");
-                                                    
-                                                var content=that.i.getChild("content");
+
+                                                var content = that.i.getChild("content");
 
                                                 $.Browser.Router.I().setRoute("#go-menu", {component: "main", path: ""});
                                                 $.Browser.Router.I().setRoute("#go-back", {
