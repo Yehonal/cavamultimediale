@@ -76,7 +76,7 @@ local.properties
 # CMD
 
 run-local-gae.sh
-cava-modules-sync.ffs_gui
+modules-cava-sync.ffs_gui
 update-gae.sh
 cavamd/data/media/avi/*
 nbproject/*
