@@ -11,8 +11,7 @@ hwc.include([
     "hwc!{PATH_JS_LIB}browser/application/Component.js",
     "hwc!{PATH_JS_LIB}browser/application/System.js",
     "hwc!{CMDPATH_JS}Language.js",
-    "hwc!{CMDPATH_JS}tmpl/body.js",
-    "hwc!{CMDPATH_JS}Navigator.js"
+    "hwc!{CMDPATH_JS}tmpl/body.js"
 ]).define(function () {
     var $ = this;
 
