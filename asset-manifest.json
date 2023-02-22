@@ -1,16 +1,21 @@
 {
   "files": {
-    "main.css": "/cavamultimediale/static/css/main.073c9b0a.css",
-    "main.js": "/cavamultimediale/static/js/main.68521c44.js",
+    "main.css": "/cavamultimediale/static/css/main.7bcc9ec5.css",
+    "main.js": "/cavamultimediale/static/js/main.72780dad.js",
     "static/js/787.f26454fe.chunk.js": "/cavamultimediale/static/js/787.f26454fe.chunk.js",
-    "static/media/logo.svg": "/cavamultimediale/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "static/media/vrinda.ttf": "/cavamultimediale/static/media/vrinda.c76c8ad03e6eaf205394.ttf",
+    "static/media/TAHOMA.TTF": "/cavamultimediale/static/media/TAHOMA.b62241f8910ffcbe6921.TTF",
+    "static/media/bradhitc.ttf": "/cavamultimediale/static/media/bradhitc.ecc9a3365c3c70c5fcee.ttf",
+    "static/media/times.ttf": "/cavamultimediale/static/media/times.5f0d1de19532938c7c45.ttf",
+    "static/media/intro_bg.png": "/cavamultimediale/static/media/intro_bg.e9ade3610e0b76f34842.png",
+    "static/media/leviwindows.ttf": "/cavamultimediale/static/media/leviwindows.66828851d9d2f0ee6d39.ttf",
     "index.html": "/cavamultimediale/index.html",
-    "main.073c9b0a.css.map": "/cavamultimediale/static/css/main.073c9b0a.css.map",
-    "main.68521c44.js.map": "/cavamultimediale/static/js/main.68521c44.js.map",
+    "main.7bcc9ec5.css.map": "/cavamultimediale/static/css/main.7bcc9ec5.css.map",
+    "main.72780dad.js.map": "/cavamultimediale/static/js/main.72780dad.js.map",
     "787.f26454fe.chunk.js.map": "/cavamultimediale/static/js/787.f26454fe.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.073c9b0a.css",
-    "static/js/main.68521c44.js"
+    "static/css/main.7bcc9ec5.css",
+    "static/js/main.72780dad.js"
   ]
 }
