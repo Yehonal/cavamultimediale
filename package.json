@@ -1,5 +1,6 @@
 {
   "name": "cava-multimediale",
+  "homepage": "https://yehonal.github.io/cavamultimediale",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
