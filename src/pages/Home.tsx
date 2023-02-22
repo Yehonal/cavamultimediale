@@ -1,0 +1,13 @@
+const Home = () =>
+    <div id="main-page">
+        <div id="main-header"></div>
+
+        <div id="main-center">
+            <div id="main-center-text"></div>
+        </div>
+
+        <div id="main-bottom"></div>
+    </div>
+
+
+export default Home
