@@ -1,21 +1,42 @@
 {
   "files": {
-    "main.css": "/cavamultimediale/static/css/main.7bcc9ec5.css",
-    "main.js": "/cavamultimediale/static/js/main.72780dad.js",
+    "main.css": "/cavamultimediale/static/css/main.ea1196e6.css",
+    "main.js": "/cavamultimediale/static/js/main.3550d719.js",
     "static/js/787.f26454fe.chunk.js": "/cavamultimediale/static/js/787.f26454fe.chunk.js",
     "static/media/vrinda.ttf": "/cavamultimediale/static/media/vrinda.c76c8ad03e6eaf205394.ttf",
     "static/media/TAHOMA.TTF": "/cavamultimediale/static/media/TAHOMA.b62241f8910ffcbe6921.TTF",
+    "static/media/1.bmp": "/cavamultimediale/static/media/1.54912756802a66a1ec53.bmp",
+    "static/media/10.bmp": "/cavamultimediale/static/media/10.d0340fc84f3fced6dafc.bmp",
+    "static/media/2.bmp": "/cavamultimediale/static/media/2.3c2e8346c7d7fd49e7bf.bmp",
+    "static/media/3.bmp": "/cavamultimediale/static/media/3.e42fea472774cb260594.bmp",
+    "static/media/4.bmp": "/cavamultimediale/static/media/4.73477fd74f68ad91a4eb.bmp",
+    "static/media/5.bmp": "/cavamultimediale/static/media/5.3bdeeed8b1159d256678.bmp",
+    "static/media/6.bmp": "/cavamultimediale/static/media/6.ee11c549ca1f8673c645.bmp",
+    "static/media/7.bmp": "/cavamultimediale/static/media/7.f0f7a85f913ad464ebaa.bmp",
+    "static/media/8.bmp": "/cavamultimediale/static/media/8.53c61fb239bdef367d27.bmp",
+    "static/media/9.bmp": "/cavamultimediale/static/media/9.f23568076d7fe90b8684.bmp",
+    "static/media/main.jpg": "/cavamultimediale/static/media/main.b20b7a6a148faaada864.jpg",
     "static/media/bradhitc.ttf": "/cavamultimediale/static/media/bradhitc.ecc9a3365c3c70c5fcee.ttf",
     "static/media/times.ttf": "/cavamultimediale/static/media/times.5f0d1de19532938c7c45.ttf",
+    "static/media/etex.bmp": "/cavamultimediale/static/media/etex.8031b87fa412c4305ed3.bmp",
+    "static/media/itex.bmp": "/cavamultimediale/static/media/itex.a94f2dac5f1aee36ec64.bmp",
     "static/media/intro_bg.png": "/cavamultimediale/static/media/intro_bg.e9ade3610e0b76f34842.png",
+    "static/media/m1.bmp": "/cavamultimediale/static/media/m1.905bf95fc2bbb195c748.bmp",
+    "static/media/m2.bmp": "/cavamultimediale/static/media/m2.cbe6920bd8cb2c2c6dde.bmp",
+    "static/media/m3.bmp": "/cavamultimediale/static/media/m3.3f600f09e65cbc442370.bmp",
+    "static/media/m4.bmp": "/cavamultimediale/static/media/m4.ec537b5af6f29d357742.bmp",
+    "static/media/m5.bmp": "/cavamultimediale/static/media/m5.50691602a501c5121c0c.bmp",
+    "static/media/m6.bmp": "/cavamultimediale/static/media/m6.bab07bb69a2750773b5a.bmp",
     "static/media/leviwindows.ttf": "/cavamultimediale/static/media/leviwindows.66828851d9d2f0ee6d39.ttf",
+    "static/media/iscroll.txt": "/cavamultimediale/static/media/iscroll.5143c8df8ba4a0fda134.txt",
+    "static/media/escroll.txt": "/cavamultimediale/static/media/escroll.83b20816d0099572ec21.txt",
     "index.html": "/cavamultimediale/index.html",
-    "main.7bcc9ec5.css.map": "/cavamultimediale/static/css/main.7bcc9ec5.css.map",
-    "main.72780dad.js.map": "/cavamultimediale/static/js/main.72780dad.js.map",
+    "main.ea1196e6.css.map": "/cavamultimediale/static/css/main.ea1196e6.css.map",
+    "main.3550d719.js.map": "/cavamultimediale/static/js/main.3550d719.js.map",
     "787.f26454fe.chunk.js.map": "/cavamultimediale/static/js/787.f26454fe.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7bcc9ec5.css",
-    "static/js/main.72780dad.js"
+    "static/css/main.ea1196e6.css",
+    "static/js/main.3550d719.js"
   ]
 }
