@@ -2,6 +2,7 @@
  * CENTER
  */
 
+
 #main-header {
     height: 100px;
 }
@@ -9,7 +10,7 @@
 #main-center {
     position: relative;
     background-repeat: no-repeat;
-    background-image: url("../../../data/media/images/main/main.jpg");
+    background-image: url("../data/media/images/main/main.jpg");
     width: 100%;
     height: 354px;
 }
@@ -17,7 +18,7 @@
 #main-center-text {
     position: absolute;
     background-repeat: no-repeat;
-    height:37px;
+    height: 37px;
     width: 370px;
     left: 50%;
     margin-left: -171px;
@@ -44,35 +45,21 @@
     display: block;
 }
 
-.marquee-scroll {
-    overflow: hidden;
-}
+
 
 #bottom-scroll span {
     width: 319px;
     height: 23px;
 }
 
-#bottom-left img {
-    /*padding-bottom:3px;
-    vertical-align: middle;*/
+
+
+.main-flag-i,
+.main-flag-e {
+    padding-top: 3px;
 }
 
-.js-marquee-wrapper {
-    /*margin-left: 330px !important;*/
+.main-flag-i_sel,
+.main-flag-e_sel {
+    padding-top: 1px;
 }
-
-.js-marquee {
-    padding-right:330px !important;
-}
-
-.main-flag-ita,.main-flag-eng {
-    padding-top:3px;
-}
-
-.main-flag-ita_sel,.main-flag-eng_sel {
-    padding-top:1px;
-}
-
-
-
