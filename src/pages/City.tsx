@@ -54,6 +54,7 @@ export default function City() {
       initial={{ width: "0%" }}
       animate={{ width: "100%" }}
       transition={{ duration: 1 }}
+      exit={{ opacity: "1", width: "100%" }}
       onAnimationComplete={() => {
         setIsAnimating(false);
       }}
