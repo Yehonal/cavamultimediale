@@ -21,6 +21,8 @@ import { BgMusicContext, IBgMusicContext } from "../components/BgMusic";
 import { motion } from "framer-motion";
 
 export default function City() {
+  const [isAnimating, setIsAnimating] = useState(true);
+
   // if the music is not playing, play it
   const bgMusic = useContext(BgMusicContext);
   useEffect(() => {
@@ -48,22 +50,12 @@ export default function City() {
 
   return (
     <motion.div
-      style={{ position: "absolute" }}
-      initial="initial"
-      animate="in"
-      exit="out"
-      transition={{ duration: 1, type: "tween", ease: "anticipate" }}
-      variants={{
-        initial: {
-          opacity: 0,
-          x: "-10vw",
-          scale: 0.8,
-        },
-        in: {
-          opacity: 1,
-          x: 0,
-          scale: 1,
-        },
+      style={{ position: "absolute", zIndex: 3 }}
+      initial={{ width: "0%" }}
+      animate={{ width: "100%" }}
+      transition={{ duration: 1 }}
+      onAnimationComplete={() => {
+        setIsAnimating(false);
       }}
     >
       <div>
@@ -87,12 +79,14 @@ export default function City() {
                 className="hide-scrollbar"
                 ref={centerTextRef}
               >
-                {scrollingText}
+                {isAnimating === false && scrollingText}
               </div>
             </div>
             <div id="city-text-scroll-wrapper">
               <div id="city-text-scroll">
-                <BlackScrollArrows textRef={centerTextRef} />
+                {isAnimating === false && (
+                  <BlackScrollArrows textRef={centerTextRef} />
+                )}
               </div>
             </div>
           </div>
