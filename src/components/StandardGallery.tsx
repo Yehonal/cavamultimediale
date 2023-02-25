@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { LanguageContext } from "./LanguageToggle";
 import SubPageFooter from "./SubPageFooter";
 import LinkButton from "./LinkButton";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function StandardGallery({
   images,
@@ -96,70 +96,80 @@ export default function StandardGallery({
         }}
         transition={{ duration: 0.5 }}
       >
-        <div id="gallery-page">
-          <div
-            id="gallery-image-top"
-            className="gallery-frame"
-            style={{ height: `${landHeight + 1}px` }}
-          ></div>
-          <div
-            id="gallery-page-center"
-            style={{ height: `${h + landHeight + 1}px` }}
-          >
+        <AnimatePresence mode="sync" initial={false}>
+          <div id="gallery-page">
             <div
-              id="gallery-image-left"
+              id="gallery-image-top"
               className="gallery-frame"
-              style={{ width: `${sideWidth}px` }}
+              style={{ height: `${landHeight + 1}px` }}
             ></div>
-            <div id="gallery-image-wrapper">
-              <div id="gallery-image-mask">
-                <img
-                  id="gallery-image"
-                  src={images[currentImage]}
-                  style={{ display: "block" }}
-                  alt="cava"
-                  onLoad={(event) => {
-                    setImageOffsets(event.target as HTMLImageElement);
-                  }}
-                />
+            <div
+              id="gallery-page-center"
+              style={{ height: `${h + landHeight + 1}px` }}
+            >
+              <div
+                id="gallery-image-left"
+                className="gallery-frame"
+                style={{ width: `${sideWidth}px` }}
+              ></div>
+              <div id="gallery-image-wrapper">
+                <div id="gallery-image-mask">
+                  <motion.img
+                    key={currentImage}
+                    style={{
+                      zIndex: currentImage + 3,
+                      display: "block",
+                    }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    exit={{ scale: 1, opacity: 1, transition: { duration: 2 } }}
+                    id="gallery-image"
+                    src={images[currentImage]}
+                    alt="cava"
+                    onLoad={(event) => {
+                      setImageOffsets(event.target as HTMLImageElement);
+                    }}
+                  />
+                </div>
+              </div>
+              <div
+                id="gallery-image-right"
+                className="gallery-frame"
+                style={{ width: `${sideWidth}px` }}
+              ></div>
+            </div>
+            <div id="gallery-controls-bar" className="gallery-frame">
+              <div id="gallery-controls-left">
+                {currentImage > 0 && (
+                  <button
+                    id="gallery-go-prev"
+                    className="link-button"
+                    onClick={() => {
+                      setCurrentImage(currentImage - 1);
+                    }}
+                  >
+                    <img src={fsx} alt="arrow" />
+                  </button>
+                )}
+              </div>
+              <div id="gallery-controls-center">{centerText}</div>
+              <div id="gallery-controls-right">
+                {currentImage < images.length - 1 && (
+                  <button
+                    id="gallery-go-next"
+                    className="link-button"
+                    onClick={() => {
+                      setCurrentImage(currentImage + 1);
+                    }}
+                  >
+                    <img src={fdx} alt="arrow" />
+                  </button>
+                )}
               </div>
             </div>
-            <div
-              id="gallery-image-right"
-              className="gallery-frame"
-              style={{ width: `${sideWidth}px` }}
-            ></div>
           </div>
-          <div id="gallery-controls-bar" className="gallery-frame">
-            <div id="gallery-controls-left">
-              {currentImage > 0 && (
-                <button
-                  id="gallery-go-prev"
-                  className="link-button"
-                  onClick={() => {
-                    setCurrentImage(currentImage - 1);
-                  }}
-                >
-                  <img src={fsx} alt="arrow" />
-                </button>
-              )}
-            </div>
-            <div id="gallery-controls-center">{centerText}</div>
-            <div id="gallery-controls-right">
-              {currentImage < images.length - 1 && (
-                <button
-                  id="gallery-go-next"
-                  className="link-button"
-                  onClick={() => {
-                    setCurrentImage(currentImage + 1);
-                  }}
-                >
-                  <img src={fdx} alt="arrow" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        </AnimatePresence>
         <SubPageFooter>
           <div id="gallery-start-div">
             <LinkButton id="gallery-start" onClick={() => setStart(!start)}>
