@@ -1,13 +1,15 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { BASENAME } from "../app.defs";
 
 export interface IBgMusicContext {
   play: boolean;
   src: string;
+  mute?: boolean;
 }
 
 export type BgMusicContextType = {
   music: IBgMusicContext;
-  setMusic: { (music: IBgMusicContext): void };
+  setMusic: any;
   audio: HTMLAudioElement;
 };
 
@@ -18,10 +20,17 @@ export function useMusicStatus() {
 
   const [music, setMusic] = useState<IBgMusicContext>({
     play: false,
+    mute: false,
     src: "",
   });
-  return useMemo(() => {
+
+  useEffect(() => {
+    console.log("BgMusic: start muted");
     audio.pause(); // pause only the very first time
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return useMemo(() => {
     return { music, setMusic, audio };
   }, [music, setMusic, audio]);
 }
@@ -32,14 +41,26 @@ const BgMusic = ({ props }: { props: { audioPath: string } }) => {
   useEffect(() => {
     const audio = audioContext.audio;
 
-    audio.src = window.location.href + audioContext.music.src;
+    const newSrc = `${window.location.protocol}//${window.location.host}/${BASENAME}/${audioContext.music.src}`;
+
+    if (audioContext.music.mute) {
+      audio.pause();
+      return;
+    }
+
+    if (audio.src === newSrc && audioContext.music.play && !audio.paused)
+      return;
+
     audio.pause();
-    if (audioContext.music.play) {
-      audio.loop = true;
+    if (audioContext.music.src && audioContext.music.play) {
+      audio.src = newSrc;
+      console.log("BgMusic: play:" + newSrc);
+      audio.loop = false;
       audio.play();
     }
     return () => {
-      audio.pause();
+      console.log("BgMusic: unmounting", audioContext.music.play);
+      // audio.pause();
     };
   }, [audioContext]);
 

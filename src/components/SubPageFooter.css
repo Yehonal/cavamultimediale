@@ -1,0 +1,13 @@
+.hidden-bottom-bar {
+    top: 473px !important;
+    /* same as body.css */
+    height: 7px !important;
+    overflow: hidden !important;
+}
+
+.hidden-bottom-bar:hover,
+.hidden-bottom-bar.hovered {
+    top: 456px !important;
+    /* same as body.css */
+    height: 25px !important;
+}

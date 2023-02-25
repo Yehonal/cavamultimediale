@@ -1,0 +1,321 @@
+/*
+ * Copyright (C) 2007 - 2014 Hyperweb2 All rights reserved.
+ * GNU General Public License version 3; see www.hyperweb2.com/terms/
+ */
+
+/*
+ * GENERIC
+ */
+
+@font-face {
+    font-family: 'Vrinda';
+    src: url('../data/media/fonts/vrinda.ttf');
+}
+
+@font-face {
+    font-family: 'Times New Roman';
+    src: url('../data/media/fonts/times.ttf');
+}
+
+@font-face {
+    font-family: 'Bradley Hand Itc';
+    src: url('../data/media/fonts/bradhitc.ttf');
+}
+
+@font-face {
+    font-family: 'Tahoma';
+    src: url('../data/media/fonts/TAHOMA.TTF');
+}
+
+@font-face {
+    font-family: 'LeviWindows';
+    src: url('../data/media/fonts/leviwindows.ttf');
+}
+
+.hidden {
+    display: none;
+}
+
+.show {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/*
+ * LAYOUT
+ */
+
+body {
+    margin: 0;
+    /* odd fix */
+    background-color: #000000;
+    height: 100%;
+}
+
+#body-wrapper {
+    position: absolute;
+    /* absolute let div to fill height using margin */
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+header {
+    position: relative;
+    width: 100%;
+    height: 90px;
+    left: 0;
+    top: 0;
+}
+
+#page {
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+footer {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    /* let div to fill the bottom*/
+    margin: 0px;
+    padding: 0px;
+}
+
+/*
+ * NAV BAR
+ */
+
+#nav-bar {
+    width: 640px;
+    height: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 20px 5px white;
+    -moz-box-shadow: 0 0 20px 5px white;
+    -webkit-box-shadow: 0 0 20px 5px white;
+    text-align: center;
+}
+
+#nav-bar a {
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+
+}
+
+#nav-bar>div {
+    padding-top: 20px;
+}
+
+#nav-bar-left {
+    float: left;
+    width: 20%;
+    height: inherit;
+}
+
+#nav-bar-center {
+    float: left;
+    width: 60%;
+    height: inherit;
+}
+
+#nav-bar-center button {
+    border-top: 1px solid grey;
+    border-bottom: 1px solid black;
+    height: 23px;
+    color: black;
+    background-color: #FFFFFF;
+}
+
+#nav-bar-right {
+    float: left;
+    width: 20%;
+    height: inherit;
+}
+
+/*
+ * AUDIO CONTROLS
+ */
+
+#audio img {
+    height: 23px;
+    width: auto;
+}
+
+
+/*
+ * APPLICATION
+ */
+
+#application-wrapper {
+    position: relative;
+    /* to rule absolute divs inside */
+    width: 638px;
+    /* we should consider 1+1 border px */
+    height: 478px;
+    /* we should consider 1+1 border px */
+    margin-left: auto;
+    margin-right: auto;
+    color: #000;
+    font-size: 11px;
+    font-family: "Times New Roman", Times;
+    /* disable antialias on fonts
+    font-smooth: none !important;
+    -webkit-font-smoothing: none !important;
+    -webkit-text-stroke: none !important; */
+}
+
+#application {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: 0 0 20px 5px white;
+    -moz-box-shadow: 0 0 20px 5px white;
+    -webkit-box-shadow: 0 0 20px 5px white;
+}
+
+#application a,
+.bottom-link {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-family: "Vrinda";
+    font-size: 17px;
+    line-height: 25px;
+    /* no underline */
+}
+
+#application-content,
+#application-content-trans {
+    width: 100%;
+    max-height: 472px;
+    z-index: 1;
+}
+
+#application-content-trans.empty {
+    width: 0px;
+    z-index: 3;
+    position: absolute;
+}
+
+#application-content-trans.filled {
+    width: 100%;
+    z-index: 3;
+    position: absolute;
+}
+
+/*
+ * BOTTOM BAR
+ */
+
+
+#bottom-bar {
+    position: absolute;
+    color: #FFFFFF;
+    background-color: #000;
+    font-family: "Vrinda";
+    width: 100%;
+    height: 25px;
+    width: 638px;
+    /* we should consider 1+1 border px */
+    font-size: 17px;
+    line-height: 25px;
+    top: 454px;
+    /* app height + 1px border_top - bar height */
+    overflow: hidden;
+    z-index: 2;
+}
+
+#bottom-left {
+    float: left;
+    width: 17.3%;
+    min-height: 25px;
+}
+
+#bottom-right {
+    float: left;
+    width: auto;
+    min-height: 25px;
+    margin-left: 30px;
+}
+
+#bottom-center {
+    color: #ff0;
+    float: left;
+    /*width: 50%;*/
+    width: 330px;
+    min-height: 25px;
+}
+
+.bottom-item {
+    margin-right: 15px;
+    float: left;
+    position: relative;
+}
+
+#bottom-left div {
+    padding-left: 7px;
+    float: left;
+}
+
+/*
+ *   FOOTER
+ */
+
+
+#footer-bar {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    width: 640px;
+    height: 100px;
+    font-size: 17px;
+    line-height: 27px;
+    top: 455px;
+    overflow: hidden;
+    color: #FFFFFF;
+    z-index: 2;
+}
+
+#footer-bar a {
+    text-decoration: underline;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+#footer-bar-left {
+    float: left;
+    width: auto;
+    min-height: 25px;
+    font-size: small;
+}
+
+#footer-bar-right {
+    float: left;
+    width: auto;
+    min-height: 25px;
+    margin-left: 30px;
+}
+
+#footer-bar-center {
+    color: #ff0;
+    float: left;
+    /*width: 50%;*/
+    width: auto;
+    min-height: 25px;
+}
+
+/*
+    EXTRA
+
+*/
+
+.locked:hover {
+    cursor: no-drop;
+}

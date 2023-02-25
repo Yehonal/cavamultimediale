@@ -1,0 +1,7 @@
+.marquee-scroll {
+    overflow: hidden;
+}
+
+.marquee-text {
+    padding-left: 330px !important;
+}
