@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/cavamultimediale/static/css/main.c2137b3f.css",
-    "main.js": "/cavamultimediale/static/js/main.b004d1c4.js",
+    "main.js": "/cavamultimediale/static/js/main.6fad17fe.js",
     "static/js/787.f26454fe.chunk.js": "/cavamultimediale/static/js/787.f26454fe.chunk.js",
     "static/media/vrinda.ttf": "/cavamultimediale/static/media/vrinda.c76c8ad03e6eaf205394.ttf",
     "static/media/TAHOMA.TTF": "/cavamultimediale/static/media/TAHOMA.b62241f8910ffcbe6921.TTF",
@@ -172,11 +172,11 @@
     "static/media/irightmenu.txt": "/cavamultimediale/static/media/irightmenu.53aca7105bef253a1804.txt",
     "static/media/erightmenu.txt": "/cavamultimediale/static/media/erightmenu.dee9bc0a9d0dc987e82d.txt",
     "main.c2137b3f.css.map": "/cavamultimediale/static/css/main.c2137b3f.css.map",
-    "main.b004d1c4.js.map": "/cavamultimediale/static/js/main.b004d1c4.js.map",
+    "main.6fad17fe.js.map": "/cavamultimediale/static/js/main.6fad17fe.js.map",
     "787.f26454fe.chunk.js.map": "/cavamultimediale/static/js/787.f26454fe.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c2137b3f.css",
-    "static/js/main.b004d1c4.js"
+    "static/js/main.6fad17fe.js"
   ]
 }
