@@ -49,7 +49,6 @@ export default function StandardGallery({
       });
   }, [text, currentImage]);
 
-  const [h, setH] = useState(0);
   const [landHeight, setLandHeight] = useState(0);
   const [sideWidth, setSideWidth] = useState(0);
 
@@ -57,7 +56,6 @@ export default function StandardGallery({
    * Set the image offsets for the gallery to make the image centered
    */
   const setImageOffsets = (el: HTMLImageElement) => {
-    setH(el?.height ?? 0);
     setLandHeight((445 - el?.height) / 2);
     setSideWidth((634 - el?.width) / 2);
   };
@@ -97,61 +95,44 @@ export default function StandardGallery({
         transition={{ duration: 0.5 }}
       >
         <div id="gallery-page">
-          <div
-            id="gallery-image-top"
-            className="gallery-frame"
-            style={{ height: `${landHeight + 1}px` }}
-          ></div>
-          <div
-            id="gallery-page-center"
-            style={{ height: `${h + landHeight + 1}px` }}
-          >
-            <div
-              id="gallery-image-left"
-              className="gallery-frame"
-              style={{ width: `${sideWidth}px` }}
-            ></div>
-            <div id="gallery-image-wrapper">
-              <div id="gallery-image-mask">
-                <AnimatePresence mode="sync" initial={false}>
-                  <motion.img
-                    key={images[currentImage]}
-                    style={{
-                      display: "block",
-                      position: "relative",
-                    }}
-                    initial={{
-                      opacity: 1,
-                      scale: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      scale: 1,
-                      zIndex: currentImage + 1,
-                    }}
-                    transition={{ duration: 0.5 }}
-                    exit={{
-                      scale: 1,
-                      opacity: 1,
-                      position: "absolute",
-                      zIndex: currentImage - 3,
-                      // borderColor: "transparent",
-                    }}
-                    id="gallery-image"
-                    src={images[currentImage]}
-                    alt="cava"
-                    onLoad={(event) => {
-                      setImageOffsets(event.target as HTMLImageElement);
-                    }}
-                  />
-                </AnimatePresence>
-              </div>
+          <div id="gallery-image-wrapper">
+            <div id="gallery-image-mask">
+              <AnimatePresence mode="sync" initial={false}>
+                <motion.img
+                  key={images[currentImage]}
+                  style={{
+                    display: "flex",
+                    position: "relative",
+                  }}
+                  initial={{
+                    opacity: 1,
+                    scale: 0,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    zIndex: currentImage + 1,
+                  }}
+                  transition={{ duration: 0.5 }}
+                  exit={{
+                    scale: 1,
+                    opacity: 1,
+                    position: "absolute",
+                    zIndex: currentImage - 3,
+                    top: landHeight,
+                    left: sideWidth,
+                    transition: { ease: "anticipate" },
+                    // borderColor: "transparent",
+                  }}
+                  id="gallery-image"
+                  src={images[currentImage]}
+                  alt="cava"
+                  onLoad={(event) => {
+                    setImageOffsets(event.target as HTMLImageElement);
+                  }}
+                />
+              </AnimatePresence>
             </div>
-            <div
-              id="gallery-image-right"
-              className="gallery-frame"
-              style={{ width: `${sideWidth}px` }}
-            ></div>
           </div>
           <div id="gallery-controls-bar" className="gallery-frame">
             <div id="gallery-controls-left">
