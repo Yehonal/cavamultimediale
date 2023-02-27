@@ -1,5 +1,5 @@
-import scrollUp from "../data/media/images/vari/fup.png";
-import scrollDown from "../data/media/images/vari/fdown.png";
+import scrollUp from "../../../data/media/images/vari/fup.png";
+import scrollDown from "../../../data/media/images/vari/fdown.png";
 import { RefObject } from "react";
 
 export default function BlackScrollArrows({

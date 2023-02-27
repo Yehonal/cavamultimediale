@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { BgMusicContext, IBgMusicContext } from "../../../components/BgMusic";
+import { BgMusicContext, IBgMusicContext } from "../components/BgMusic";
 
 export function useCurrentBgMusic(src: string) {
   const bgMusic = useContext(BgMusicContext);

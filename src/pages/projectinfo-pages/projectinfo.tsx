@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useContext, useState } from "react";
 import { AppContext } from "../../AppContext";
-import LinkButton from "../../components/LinkButton";
+import LinkButton from "../../modules/common/components/LinkButton";
 import IDeveloping from "./i-developing";
 import IFAQ from "./i-faq";
 import IIntro from "./i-intro";

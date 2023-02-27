@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ReactPlayer from "react-player";
 import { AppContext } from "../AppContext";
 import "./Intro.css";
-import { BgMusicContext } from "../components/BgMusic";
+import { BgMusicContext } from "../modules/audioplayer/components/BgMusic";
 
 const Intro = () => {
   const bgMusic = useContext(BgMusicContext);

@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import i_sel from "../data/media/images/flags/ita_sel.png";
-import i from "../data/media/images/flags/ita.png";
-import e_sel from "../data/media/images/flags/eng_sel.png";
-import e from "../data/media/images/flags/eng.png";
+import i_sel from "../../../data/media/images/flags/ita_sel.png";
+import i from "../../../data/media/images/flags/ita.png";
+import e_sel from "../../../data/media/images/flags/eng_sel.png";
+import e from "../../../data/media/images/flags/eng.png";
 
 const flagImages: Record<string, string> = {
   i_sel,

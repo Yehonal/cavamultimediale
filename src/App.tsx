@@ -1,11 +1,14 @@
 import "./App.css";
 import { useAppStatus, AppContext } from "./AppContext";
-import BgMusic, { BgMusicContext, useMusicStatus } from "./components/BgMusic";
+import BgMusic, {
+  BgMusicContext,
+  useMusicStatus,
+} from "./modules/audioplayer/components/BgMusic";
 import {
   LanguageContext,
   useLanguageStatus,
-} from "./components/LanguageToggle";
-import Layout from "./layouts/MainLayout";
+} from "./modules/home/components/LanguageToggle";
+import Layout from "./modules/layout/components/MainLayout";
 import Routes from "./Routes";
 
 function App() {

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { BASENAME } from "../app.defs";
+import { BASENAME } from "../../../app.defs";
 
 export interface IBgMusicContext {
   play: boolean;

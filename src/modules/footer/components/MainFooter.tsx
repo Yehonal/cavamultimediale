@@ -1,7 +1,9 @@
 import Marquee from "react-fast-marquee";
-import LanguageToggle, { LanguageContext } from "./LanguageToggle";
-import e_text from "../data/media/text/main/escroll.txt";
-import i_text from "../data/media/text/main/iscroll.txt";
+import LanguageToggle, {
+  LanguageContext,
+} from "../../home/components/LanguageToggle";
+import e_text from "../../../data/media/text/main/escroll.txt";
+import i_text from "../../../data/media/text/main/iscroll.txt";
 
 import { useState, useContext, useEffect } from "react";
 import "./MainFooter.css";

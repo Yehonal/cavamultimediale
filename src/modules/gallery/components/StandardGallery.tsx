@@ -1,11 +1,11 @@
 import "./StandardGallery.css";
 
-import fdx from "../data/media/images/vari/fdx.bmp";
-import fsx from "../data/media/images/vari/fsx.bmp";
+import fdx from "../../../data/media/images/vari/fdx.bmp";
+import fsx from "../../../data/media/images/vari/fsx.bmp";
 import { useContext, useEffect, useState } from "react";
-import { LanguageContext } from "./LanguageToggle";
-import SubPageFooter from "./SubPageFooter";
-import LinkButton from "./LinkButton";
+import { LanguageContext } from "../../home/components/LanguageToggle";
+import SubPageFooter from "../../footer/components/SubPageFooter";
+import LinkButton from "../../common/components/LinkButton";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function StandardGallery({

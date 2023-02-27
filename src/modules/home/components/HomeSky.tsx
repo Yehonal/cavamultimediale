@@ -1,13 +1,13 @@
-import header1 from "../data/media/images/main/1.bmp";
-import header2 from "../data/media/images/main/2.bmp";
-import header3 from "../data/media/images/main/3.bmp";
-import header4 from "../data/media/images/main/4.bmp";
-import header5 from "../data/media/images/main/5.bmp";
-import header6 from "../data/media/images/main/6.bmp";
-import header7 from "../data/media/images/main/7.bmp";
-import header8 from "../data/media/images/main/8.bmp";
-import header9 from "../data/media/images/main/9.bmp";
-import header10 from "../data/media/images/main/10.bmp";
+import header1 from "../../../data/media/images/main/1.bmp";
+import header2 from "../../../data/media/images/main/2.bmp";
+import header3 from "../../../data/media/images/main/3.bmp";
+import header4 from "../../../data/media/images/main/4.bmp";
+import header5 from "../../../data/media/images/main/5.bmp";
+import header6 from "../../../data/media/images/main/6.bmp";
+import header7 from "../../../data/media/images/main/7.bmp";
+import header8 from "../../../data/media/images/main/8.bmp";
+import header9 from "../../../data/media/images/main/9.bmp";
+import header10 from "../../../data/media/images/main/10.bmp";
 import { useMemo, useEffect, useState } from "react";
 
 /**

@@ -1,6 +1,6 @@
 import { createRef, useContext, useEffect, useState } from "react";
-import { LanguageContext } from "../components/LanguageToggle";
-import SubPageFooter from "../components/SubPageFooter";
+import { LanguageContext } from "../modules/home/components/LanguageToggle";
+import SubPageFooter from "../modules/footer/components/SubPageFooter";
 import "./City.css";
 
 import e_text from "../data/media/text/ccav/ebenv.txt";
@@ -15,7 +15,7 @@ import im1 from "../data/media/images/cittcava/im1.bmp";
 import em2 from "../data/media/images/cittcava/em2.bmp";
 import im2 from "../data/media/images/cittcava/im2.bmp";
 
-import BlackScrollArrows from "../components/BlackScrollArrows";
+import BlackScrollArrows from "../modules/common/components/BlackScrollArrows";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCurrentBgMusic } from "../modules/audioplayer/hooks/bgmusicHooks";

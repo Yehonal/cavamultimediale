@@ -1,4 +1,4 @@
-import StandardGallery from "../components/StandardGallery";
+import StandardGallery from "../modules/gallery/components/StandardGallery";
 
 import itext from "../data/media/text/cavaieri/img/di.dat";
 import etext from "../data/media/text/cavaieri/img/de.dat";

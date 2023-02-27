@@ -1,11 +1,11 @@
 import { ReactNode, useContext } from "react";
-import BgMusciToggle from "../components/BgMusicToggle";
-import { LanguageContext } from "../components/LanguageToggle";
+import BgMusciToggle from "../../audioplayer/components/BgMusicToggle";
+import { LanguageContext } from "../../home/components/LanguageToggle";
 import "./MainLayout.css";
-import elanguage from "../data/media/text/intro/elanguage.json";
-import ilanguage from "../data/media/text/intro/ilanguage.json";
-import { AppContext } from "../AppContext";
-import LinkButton from "../components/LinkButton";
+import elanguage from "../../../data/media/text/intro/elanguage.json";
+import ilanguage from "../../../data/media/text/intro/ilanguage.json";
+import { AppContext } from "../../../AppContext";
+import LinkButton from "../../common/components/LinkButton";
 
 function MainLayout(props: { children: ReactNode }) {
   const { language } = useContext(LanguageContext);

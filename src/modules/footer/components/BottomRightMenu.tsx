@@ -1,9 +1,9 @@
-import e_br_text from "../data/media/text/bottombar/erightmenu.txt";
-import i_br_text from "../data/media/text/bottombar/irightmenu.txt";
+import e_br_text from "../../../data/media/text/bottombar/erightmenu.txt";
+import i_br_text from "../../../data/media/text/bottombar/irightmenu.txt";
 import { Link } from "react-router-dom";
-import LockedElement from "./LockedElement";
+import LockedElement from "../../common/components/LockedElement";
 import { useState, useEffect, useContext } from "react";
-import { LanguageContext } from "./LanguageToggle";
+import { LanguageContext } from "../../home/components/LanguageToggle";
 
 export default function BottomRightMenu() {
   const { language } = useContext(LanguageContext);

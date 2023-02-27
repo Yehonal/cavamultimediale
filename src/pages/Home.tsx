@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import AppFooter from "../components/MainFooter";
-import { LanguageContext } from "../components/LanguageToggle";
+import AppFooter from "../modules/footer/components/MainFooter";
+import { LanguageContext } from "../modules/home/components/LanguageToggle";
 import etex from "../data/media/images/main/etex.bmp";
 import itex from "../data/media/images/main/itex.bmp";
 
@@ -13,8 +13,8 @@ import menu6 from "../data/media/images/main/m6.bmp";
 
 import "./Home.css";
 import { Link } from "react-router-dom";
-import LockedElement from "../components/LockedElement";
-import HomeSky from "../components/HomeSky";
+import LockedElement from "../modules/common/components/LockedElement";
+import HomeSky from "../modules/home/components/HomeSky";
 import { motion } from "framer-motion";
 import { useCurrentBgMusic } from "../modules/audioplayer/hooks/bgmusicHooks";
 

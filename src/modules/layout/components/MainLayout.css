@@ -9,27 +9,27 @@
 
 @font-face {
     font-family: 'Vrinda';
-    src: url('../data/media/fonts/vrinda.ttf');
+    src: url('../../../data/media/fonts/vrinda.ttf');
 }
 
 @font-face {
     font-family: 'Times New Roman';
-    src: url('../data/media/fonts/times.ttf');
+    src: url('../../../data/media/fonts/times.ttf');
 }
 
 @font-face {
     font-family: 'Bradley Hand Itc';
-    src: url('../data/media/fonts/bradhitc.ttf');
+    src: url('../../../data/media/fonts/bradhitc.ttf');
 }
 
 @font-face {
     font-family: 'Tahoma';
-    src: url('../data/media/fonts/tahoma.ttf');
+    src: url('../../../data/media/fonts/tahoma.ttf');
 }
 
 @font-face {
     font-family: 'LeviWindows';
-    src: url('../data/media/fonts/leviwindows.ttf');
+    src: url('../../../data/media/fonts/leviwindows.ttf');
 }
 
 .hidden {
