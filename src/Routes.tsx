@@ -15,6 +15,7 @@ import CityYesterday from "./pages/CityYesterday";
 
 import Home from "./pages/Home";
 import Intro from "./pages/Intro";
+import ProjectInfo from "./pages/projectinfo-pages/projectinfo";
 
 const SetGlobalNavigator = () => {
   const appContext = useContext(AppContext);
@@ -43,6 +44,7 @@ function RoutesList() {
         <Route path="/city" element={<City />} />
         <Route path="/city/yesterday" element={<CityYesterday />} />
         <Route path="/city/today" element={<CityToday />} />
+        <Route path="/projectinfo" element={<ProjectInfo />} />
       </Routes>
     </AnimatePresence>
   );

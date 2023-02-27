@@ -5,6 +5,7 @@ import "./MainLayout.css";
 import elanguage from "../data/media/text/intro/elanguage.json";
 import ilanguage from "../data/media/text/intro/ilanguage.json";
 import { AppContext } from "../AppContext";
+import LinkButton from "../components/LinkButton";
 
 function MainLayout(props: { children: ReactNode }) {
   const { language } = useContext(LanguageContext);
@@ -21,10 +22,13 @@ function MainLayout(props: { children: ReactNode }) {
         <nav>
           <div id="nav-bar">
             <div id="nav-bar-left">
-              <button id="project-info-link" onClick={() => {}}>
+              <LinkButton
+                id="project-info-link"
+                onClick={() => appContext.ctx.globalNavigator?.("/projectinfo")}
+              >
                 Info <br></br>
                 <span style={{ fontSize: "12px" }}>(Ver. 0.1 alpha)</span>
-              </button>
+              </LinkButton>
             </div>
             <div id="nav-bar-center">
               {appContext.ctx.showSkipIntro && (
