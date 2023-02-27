@@ -25,7 +25,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative
+    position: relative;
+    height: 445px;
 }
 
 #gallery-image-mask {
@@ -67,7 +68,7 @@
 
 #gallery-image {
     display: none;
-    max-height: 437px;
+    max-height: 427px;
 }
 
 #gallery-start-div {

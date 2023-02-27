@@ -4,6 +4,7 @@ import { NavigateFunction } from "react-router-dom";
 export interface IAppContext {
   globalNavigator?: NavigateFunction;
   showSkipIntro?: boolean;
+  transitionMeta?: { duration: number; source: string };
 }
 
 export type AppContextType = {

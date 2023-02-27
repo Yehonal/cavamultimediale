@@ -17,22 +17,13 @@ import im2 from "../data/media/images/cittcava/im2.bmp";
 
 import BlackScrollArrows from "../components/BlackScrollArrows";
 import { Link } from "react-router-dom";
-import { BgMusicContext, IBgMusicContext } from "../components/BgMusic";
 import { motion } from "framer-motion";
+import { useCurrentBgMusic } from "../modules/audioplayer/hooks/bgmusicHooks";
 
 export default function City() {
   const [isAnimating, setIsAnimating] = useState(true);
 
-  // if the music is not playing, play it
-  const bgMusic = useContext(BgMusicContext);
-  useEffect(() => {
-    bgMusic.setMusic((music: IBgMusicContext) => ({
-      ...music,
-      play: true,
-      src: "/wave/main.wav",
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useCurrentBgMusic("/wave/main.wav");
 
   const { language } = useContext(LanguageContext);
 
@@ -50,11 +41,15 @@ export default function City() {
 
   return (
     <motion.div
-      style={{ position: "absolute", zIndex: 3 }}
+      style={{ position: "absolute", zIndex: 1 }}
       initial={{ width: "0%" }}
-      animate={{ width: "100%" }}
-      transition={{ duration: 1 }}
-      exit={{ opacity: "1", width: "100%" }}
+      animate={{ width: "100%", transition: { duration: 1 } }}
+      exit={{
+        width: "100%",
+        zIndex: 0,
+        transitionEnd: { display: "none" },
+        transition: { duration: 0.5 },
+      }}
       onAnimationComplete={() => {
         setIsAnimating(false);
       }}

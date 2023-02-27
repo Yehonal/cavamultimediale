@@ -9,7 +9,9 @@ export interface IBgMusicContext {
 
 export type BgMusicContextType = {
   music: IBgMusicContext;
-  setMusic: any;
+  setMusic: {
+    (ctx: IBgMusicContext | { (ctx: IBgMusicContext): IBgMusicContext }): void;
+  };
   audio: HTMLAudioElement;
 };
 

@@ -83,16 +83,16 @@ export default function StandardGallery({
   return (
     <>
       <motion.div
-        style={{ position: "absolute", zIndex: 3 }}
+        style={{ position: "absolute", zIndex: 1 }}
         initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
+        animate={{ scale: 1, transition: { duration: 0.5 } }}
         exit={{
-          opacity: "1",
           width: "100%",
           scale: 1,
-          transition: { duration: 1 },
+          zIndex: 0,
+          transitionEnd: { display: "none" },
+          transition: { duration: 0.5 },
         }}
-        transition={{ duration: 0.5 }}
       >
         <div id="gallery-page">
           <div id="gallery-image-wrapper">
@@ -102,7 +102,12 @@ export default function StandardGallery({
                   key={images[currentImage]}
                   style={{
                     display: "flex",
-                    position: "relative",
+                    position: "absolute",
+                    top: landHeight,
+                    left: sideWidth,
+                    borderColor: "yellow",
+                    borderStyle: "solid",
+                    borderWidth: "1px",
                   }}
                   initial={{
                     opacity: 1,
@@ -111,18 +116,14 @@ export default function StandardGallery({
                   animate={{
                     opacity: 1,
                     scale: 1,
-                    zIndex: currentImage + 1,
+                    zIndex: 1,
                   }}
                   transition={{ duration: 0.5 }}
                   exit={{
                     scale: 1,
                     opacity: 1,
-                    position: "absolute",
-                    zIndex: currentImage - 3,
-                    top: landHeight,
-                    left: sideWidth,
-                    transition: { ease: "anticipate" },
-                    // borderColor: "transparent",
+                    zIndex: 0,
+                    transitionEnd: { display: "none" },
                   }}
                   id="gallery-image"
                   src={images[currentImage]}

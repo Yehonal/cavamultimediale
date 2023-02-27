@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import AppFooter from "../components/MainFooter";
-import { BgMusicContext, IBgMusicContext } from "../components/BgMusic";
 import { LanguageContext } from "../components/LanguageToggle";
 import etex from "../data/media/images/main/etex.bmp";
 import itex from "../data/media/images/main/itex.bmp";
@@ -17,17 +16,10 @@ import { Link } from "react-router-dom";
 import LockedElement from "../components/LockedElement";
 import HomeSky from "../components/HomeSky";
 import { motion } from "framer-motion";
+import { useCurrentBgMusic } from "../modules/audioplayer/hooks/bgmusicHooks";
 
 const Home = () => {
-  const bgMusic = useContext(BgMusicContext);
-  useEffect(() => {
-    bgMusic.setMusic((music: IBgMusicContext) => ({
-      ...music,
-      play: true,
-      src: "/wave/main.wav",
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useCurrentBgMusic("/wave/main.wav");
 
   console.log("Init home page");
   const { language } = useContext(LanguageContext);
@@ -55,20 +47,23 @@ const Home = () => {
 
   return (
     <motion.div
-      style={{ position: "absolute" }}
+      style={{ position: "absolute", zIndex: 1 }}
       initial="initial"
       animate="in"
       exit="out"
-      transition={{ duration: 1 }}
       variants={{
         initial: {
           opacity: 1,
         },
         in: {
           opacity: 1,
+          transition: { duration: 0 },
         },
         out: {
           opacity: 1,
+          zIndex: 0,
+          transitionEnd: { display: "none" },
+          transition: { duration: 1 },
         },
       }}
     >

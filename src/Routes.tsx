@@ -34,6 +34,7 @@ const SetGlobalNavigator = () => {
 
 function RoutesList() {
   const location = useLocation();
+
   return (
     <AnimatePresence mode="sync" initial={false}>
       <Routes key={location.pathname} location={location}>
