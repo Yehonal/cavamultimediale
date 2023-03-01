@@ -45,7 +45,7 @@ const Intro = () => {
   }, []);
 
   return (
-    <div id="intro-page" onClick={goHome}>
+    <div id="intro-page" onClick={goHome} className="page-div">
       <div id="intro">
         <div id="hwc_intro">
           <ReactPlayer

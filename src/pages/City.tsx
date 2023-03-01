@@ -57,6 +57,7 @@ export default function City() {
       <div>
         <div
           id="city-page"
+          className="page-div"
           style={{
             backgroundImage: `url(${language === "e" ? ePageBg : iPageBg})`,
           }}

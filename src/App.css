@@ -1,3 +1,7 @@
+/**
+  * Global CSS
+  */
+
 .link-button {
   background-color: transparent;
   border: none;
@@ -18,4 +22,9 @@
 /* hide scrollbar for chrome, safari and opera */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.page-div {
+  height: 480px;
+  max-width: 640px;
 }

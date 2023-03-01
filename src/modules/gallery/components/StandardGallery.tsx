@@ -94,7 +94,7 @@ export default function StandardGallery({
           transition: { duration: 0.5 },
         }}
       >
-        <div id="gallery-page">
+        <div id="gallery-page" className="page-div">
           <div id="gallery-image-wrapper">
             <div id="gallery-image-mask">
               <AnimatePresence mode="sync" initial={false}>

@@ -43,6 +43,7 @@ const Home = () => {
 
   const availablePaths: Record<number, string> = {
     0: "/city",
+    1: "/history",
   };
 
   return (
@@ -67,7 +68,7 @@ const Home = () => {
         },
       }}
     >
-      <div id="main-page">
+      <div id="main-page" className="page-div">
         <div id="main-header">
           <HomeSky />
         </div>

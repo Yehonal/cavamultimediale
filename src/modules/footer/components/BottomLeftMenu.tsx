@@ -15,7 +15,12 @@ export default function BottomLeftMenu() {
   return (
     <>
       <div>
-        <LinkButton className="bottom-link" onClick={() => navigate(-1)}>
+        <LinkButton
+          className="bottom-link"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
           {json["back"]}
         </LinkButton>
       </div>
