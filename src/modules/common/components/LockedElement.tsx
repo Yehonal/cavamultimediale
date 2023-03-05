@@ -4,7 +4,7 @@ import { LanguageContext } from "../../home/components/LanguageToggle";
 export default function LockedElement({
   children,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   const languageContext = useContext(LanguageContext);
 

@@ -57,7 +57,7 @@ const BgMusic = ({ props }: { props: { audioPath: string } }) => {
     if (audioContext.music.src && audioContext.music.play) {
       audio.src = newSrc;
       console.log("BgMusic: play:" + newSrc);
-      audio.loop = false;
+      audio.loop = true;
       audio.play();
     }
     return () => {

@@ -32,12 +32,18 @@ export default function BottomRightMenu() {
 
           .map((item, index) => {
             return availableRoutes[index] !== false ? (
-              <Link to={availableRoutes[index] as string}>{item}</Link>
+              <Link key={index} to={availableRoutes[index] as string}>
+                {item}
+              </Link>
             ) : (
               <LockedElement>{item}</LockedElement>
             );
           })
-          .map((line) => <div className="bottom-item">{line}</div>)}
+          .map((line, index) => (
+            <div key={index} className="bottom-item">
+              {line}
+            </div>
+          ))}
     </div>
   );
 }

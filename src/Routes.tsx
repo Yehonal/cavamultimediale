@@ -17,6 +17,7 @@ import Home from "./pages/Home";
 import Intro from "./pages/Intro";
 import History from "./pages/History";
 import ProjectInfo from "./pages/projectinfo-pages/projectinfo";
+import { allHistoryRoutes } from "./pages/history-pages/lists";
 
 const SetGlobalNavigator = () => {
   const appContext = useContext(AppContext);
@@ -41,12 +42,22 @@ function RoutesList() {
     <AnimatePresence mode="sync" initial={false}>
       <Routes key={location.pathname} location={location}>
         <Route path="/" element={<Intro />} />
+        <Route path="/projectinfo" element={<ProjectInfo />} />
         <Route path="/home" element={<Home />} />
         <Route path="/city" element={<City />} />
         <Route path="/city/yesterday" element={<CityYesterday />} />
         <Route path="/city/today" element={<CityToday />} />
         <Route path="/history" element={<History />} />
-        <Route path="/projectinfo" element={<ProjectInfo />} />
+        {Object.keys(allHistoryRoutes).map(
+          (route_name) =>
+            allHistoryRoutes[route_name] && (
+              <Route
+                key={route_name}
+                path={`history/${route_name}`}
+                element={allHistoryRoutes[route_name]}
+              />
+            )
+        )}
       </Routes>
     </AnimatePresence>
   );
