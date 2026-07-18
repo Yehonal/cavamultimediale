@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "defaults": {
+    "canonical_remote": "origin",
+    "publication_remote": "origin",
+    "base_branch": "react-v1",
+    "base_ref": "origin/react-v1"
+  },
+  "integration": {
+    "branch": "main-integration",
+    "base": "origin/react-v1",
+    "strategy": "cherry-pick",
+    "stacks": []
+  },
+  "stacks": [],
+  "syncwheel_tracking": "git-tracked"
+}
