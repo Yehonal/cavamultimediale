@@ -4,7 +4,7 @@ Pagina autonoma per provare il CD-ROM originale con **v86 0.5.476**. Il prototip
 
 La macchina usa **128 MiB di RAM**. Il programma originale è a 16 bit e richiede il runtime Visual Basic 4. La compatibilità completa di navigazione, audio e video è ancora in verifica.
 
-Verifica del prototipo: boot x86, pausa e salvataggio/ripristino superati con il runtime di produzione. In una macchina Windows 98 privata sono stati avviati il launcher originale con selezione IT/EN e l’installer, che ha confermato il completamento dell’installazione. Questo non certifica ancora la navigazione completa né la riproduzione audio/video.
+Verifica del prototipo: boot x86, pausa e salvataggio/ripristino superati con il runtime di produzione. In una macchina Windows 98 privata sono stati avviati il launcher originale con selezione IT/EN e l’installer, che ha confermato il completamento dell’installazione. `CAVA.EXE` si avvia ma richiede almeno 64K colori; l’immagine di prova usa il driver VGA standard con sole 2/16 tonalità. La schermata principale, la navigazione e la riproduzione audio/video restano quindi da verificare con un driver SVGA/VBE compatibile e High Color a 16 bit.
 
 ## Avvio locale
 
@@ -26,7 +26,7 @@ Aprire [http://localhost:4173](http://localhost:4173). Il comando **Verifica emu
 3. Avviare la macchina. In Windows, eseguire `D:\RUN\RUN.EXE`; se occorre installare il programma, eseguire `D:\SETUP\SETUP.EXE`. La lettera dell’unità CD può variare.
 4. Se necessario, installare il runtime Video for Windows incluso in `D:\VIDEO\SETUP.EXE`. Verificare anche la disponibilità del codec Cinepak nel sistema ospite se i video non vengono riprodotti.
 
-Configurare il sistema ospite a **640 × 480, colori a 16 bit** per il confronto con l’applicazione originale. Il prototipo non modifica né decompila l’eseguibile del CD.
+Configurare il sistema ospite a **640 × 480, colori a 16 bit**: il programma originale rifiuta modalità con meno di 65.536 colori. Se Windows mostra soltanto 2/16 colori, installare prima un driver SVGA/VBE compatibile con v86; il driver VGA standard non basta. Il prototipo non modifica né decompila l’eseguibile del CD.
 
 I file selezionati sono letti dal browser sul dispositivo dell’utente: **non vengono caricati su un server**. Windows e l’ISO del CD non sono inclusi nel sito né nel repository. Le istruzioni del progetto in [`../AGENTS.md`](../AGENTS.md) richiedono diritti appropriati prima di distribuirli.
 
