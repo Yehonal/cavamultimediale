@@ -69,7 +69,7 @@
           <p class="setup-description">Usa un disco con Windows già installato e l’immagine del CD-ROM originale.</p>
           <div class="file-field">
             <label for="windows-image"><span class="step-number" aria-hidden="true">1</span>Disco di Windows</label>
-            <p id="windows-hint" class="field-hint">Windows 95 o 98 già installato su un disco IMG o BIN non compresso. La macchina usa 128 MB di RAM.</p>
+            <p id="windows-hint" class="field-hint">Windows 95 o 98 già installato su un disco IMG o BIN non compresso, con driver video High Color a 16 bit. La macchina usa 128 MB di RAM.</p>
             <input id="windows-image" type="file" accept=".img,.bin" aria-describedby="windows-hint windows-file-info" />
             <p id="windows-file-info" class="file-info">Nessun disco selezionato.</p>
           </div>
@@ -97,7 +97,7 @@
           <details class="saved-session">
             <summary>Come aprire il CD in Windows</summary>
             <p class="field-hint">Da Start → Esegui, apri <code>D:\RUN\RUN.EXE</code>. Se il programma richiede l’installazione, esegui <code>D:\SETUP\SETUP.EXE</code>. La lettera del CD può cambiare in base al disco Windows.</p>
-            <p class="field-hint">In Proprietà dello schermo di Windows, imposta 640 × 480 e almeno 65.536 colori (High Color, 16 bit).</p>
+            <p class="field-hint">In Proprietà dello schermo di Windows, imposta 640 × 480 e almeno 65.536 colori (High Color, 16 bit). Se compaiono solo 2 o 16 colori, manca un driver SVGA/VBE compatibile: il programma originale non può proseguire con il driver VGA standard.</p>
             <p class="field-hint">Salva la sessione prima di chiudere la pagina: le modifiche alla macchina restano in memoria, il disco originale non viene modificato.</p>
           </details>
         </aside>
