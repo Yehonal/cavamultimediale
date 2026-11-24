@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.cache/
+*.iso
+*.img
+*.bin
+*.vhd
+*.vhdx
+*.vmdk
+*.qcow2
+*.zst
+*.v86state
+*.state

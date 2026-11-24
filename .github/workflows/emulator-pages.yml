@@ -1,0 +1,53 @@
+name: Publish emulator proof of concept
+
+on:
+  push:
+    branches: [emulator-poc]
+    paths:
+      - "emulator/**"
+      - ".github/workflows/emulator-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: emulator-pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    if: github.ref == 'refs/heads/emulator-poc'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: emulator
+    steps:
+      - name: Check out the proof of concept
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: emulator/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the standalone emulator
+        run: npm run build
+
+      - name: Test the emulator
+        run: npm test
+
+      - name: Publish to the emulator subdirectory
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_branch: gh-pages
+          publish_dir: ./emulator/dist
+          destination_dir: emulator
+          keep_files: true
+          commit_message: "Publish emulator proof of concept"
