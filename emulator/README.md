@@ -4,7 +4,7 @@ Pagina autonoma per provare il CD-ROM originale con **v86 0.5.476**. Il prototip
 
 La macchina usa **128 MiB di RAM**. Il programma originale è a 16 bit e richiede il runtime Visual Basic 4. La compatibilità completa di navigazione, audio e video è ancora in verifica.
 
-Verifica del prototipo: boot x86, pausa e salvataggio/ripristino superati con il runtime di produzione. In una macchina Windows 98 privata è stato avviato il launcher originale con selezione IT/EN e aperto l’installer. Questo non certifica ancora l’installazione completa né la riproduzione audio/video.
+Verifica del prototipo: boot x86, pausa e salvataggio/ripristino superati con il runtime di produzione. In una macchina Windows 98 privata sono stati avviati il launcher originale con selezione IT/EN e l’installer, che ha confermato il completamento dell’installazione. Questo non certifica ancora la navigazione completa né la riproduzione audio/video.
 
 ## Avvio locale
 
@@ -51,7 +51,7 @@ L’hash permette di riconoscere la copia di riferimento; non attesta diritti di
 
 ## Pubblicazione
 
-Il workflow [`emulator-pages.yml`](../.github/workflows/emulator-pages.yml) esegue installazione, build e test su Node.js 22 quando cambia il prototipo nella branch `emulator-poc`. Pubblica esclusivamente `emulator/dist` nella sottocartella `emulator` della branch `gh-pages`, usando la chiave di deploy esistente `ACTIONS_DEPLOY_KEY` e preservando gli altri file del sito.
+Il workflow [`emulator-pages.yml`](../.github/workflows/emulator-pages.yml) esegue installazione, build e test su Node.js 22 quando cambia il prototipo nella branch `emulator-poc`. Pubblica esclusivamente `emulator/dist` nella sottocartella `emulator` della branch `gh-pages`, usando il token integrato di GitHub e preservando gli altri file del sito. Richiede poi esplicitamente la build di GitHub Pages: i commit prodotti da `GITHUB_TOKEN` non la attivano da soli. Non dipende dalla vecchia chiave SSH `ACTIONS_DEPLOY_KEY`, risultata non autorizzata durante il primo tentativo.
 
 Il workflow include anche `workflow_dispatch`; GitHub espone l’avvio manuale quando il file è presente sulla branch predefinita. La pubblicazione riguarda il lettore e i componenti redistribuibili dell’emulatore, non immagini Windows o contenuti del CD.
 

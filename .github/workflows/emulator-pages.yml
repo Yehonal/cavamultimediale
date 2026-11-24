@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pages: write
 
 concurrency:
   group: emulator-pages
@@ -45,9 +46,15 @@ jobs:
       - name: Publish to the emulator subdirectory
         uses: peaceiris/actions-gh-pages@v4
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./emulator/dist
           destination_dir: emulator
           keep_files: true
           commit_message: "Publish emulator proof of concept"
+
+      # Commits made with GITHUB_TOKEN do not automatically trigger Pages.
+      - name: Request a GitHub Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${{ github.repository }}/pages/builds"
