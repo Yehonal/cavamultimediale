@@ -1,5 +1,5 @@
-import { V86 } from "./vendor/libv86.mjs";
-import { parseArchive } from "./hosted.js";
+import { V86 } from "./vendor/libv86.mjs?v=9daf60689176";
+import { parseArchive } from "./hosted.js?v=b8e508304d8a";
 function element(id) {
     const found = document.getElementById(id);
     if (!found)
