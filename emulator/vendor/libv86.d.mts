@@ -46,6 +46,6 @@ export class V86 {
   keyboard_set_enabled(enabled: boolean): void;
   keyboard_send_scancodes(codes: number[]): Promise<void>;
   mouse_set_enabled(enabled: boolean): void;
-  speaker_adapter?: { audio_context?: AudioContext };
+  speaker_adapter?: { audio_context?: AudioContext; mixer?: { node_merger?: ChannelMergerNode } };
   zstd_worker?: Worker | null;
 }

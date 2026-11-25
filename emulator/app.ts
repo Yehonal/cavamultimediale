@@ -34,6 +34,7 @@ let activeDiskName = "windows";
 let rejectStartup: ((error: Error) => void) | undefined;
 let archive: Archive | undefined;
 let audioPreference: "auto" | "enabled" | "muted" = "auto";
+const audioOutputs = new WeakMap<V86, { context: AudioContext; gain: GainNode; merger: ChannelMergerNode }>();
 
 async function hostedImages(): Promise<Pick<EmulatorOptions, "hda" | "cdrom" | "initial_state" | "memory_size" | "vga_memory_size">> {
   const url = new URL("archive.json", window.location.href);
@@ -77,8 +78,9 @@ function controls(): void {
   restartButton.disabled = busy || (!ready && mode !== "archive");
   restartButton.textContent = mode === "archive" ? (ready ? "Ricomincia" : "Riprova") : "Riavvia";
   saveButton.disabled = busy || !ready || mode !== "windows";
-  audioButton.disabled = busy || !ready || !emulator?.speaker_adapter?.audio_context;
-  const audioEnabled = emulator?.speaker_adapter?.audio_context?.state === "running";
+  const audioOutput = emulator ? audioOutputs.get(emulator) : undefined;
+  audioButton.disabled = busy || !ready || !audioOutput || audioOutput.context.state === "closed";
+  const audioEnabled = audioOutput?.context.state === "running" && audioPreference !== "muted";
   audioButton.textContent = audioEnabled ? "Disattiva audio" : "Attiva audio";
   audioButton.setAttribute("aria-pressed", String(audioEnabled));
   pauseButton.textContent = emulator?.is_running() ? "Pausa" : "Riprendi";
@@ -104,33 +106,55 @@ function captureInput(enabled: boolean): void {
 }
 
 async function dispose(machine: V86): Promise<void> {
+  const audioOutput = audioOutputs.get(machine);
+  if (audioOutput) audioOutput.gain.gain.value = 0;
   try {
     await machine.destroy();
   } finally {
     // The pinned upstream destroy() does not release its decompression worker.
     machine.zstd_worker?.terminate();
     machine.zstd_worker = null;
+    if (audioOutput) {
+      audioOutput.gain.disconnect();
+      audioOutputs.delete(machine);
+    }
   }
 }
 
 async function enableAudio(): Promise<void> {
-  if (audioPreference === "muted") return;
   try {
+    // Keep the emulated DAC clock running even when the visitor mutes sound.
+    // Suspending AudioContext can block synchronous audio/video in Windows 9x.
     await emulator?.speaker_adapter?.audio_context?.resume();
-    controls();
+    enforceAudioPreference();
   } catch {
     // Browsers may require another explicit click before enabling sound.
   }
 }
 
 function enforceAudioPreference(): void {
-  const context = emulator?.speaker_adapter?.audio_context;
-  // v86 resumes its AudioContext whenever the CPU starts. Keep an explicit
-  // visitor mute across pause/resume and snapshot restarts.
-  if (audioPreference === "muted" && context?.state === "running") {
-    void context.suspend().catch(() => undefined);
+  const output = emulator ? audioOutputs.get(emulator) : undefined;
+  if (output) {
+    output.gain.gain.setValueAtTime(audioPreference === "muted" ? 0 : 1, output.context.currentTime);
   }
   controls();
+}
+
+function attachAudioOutput(machine: V86): void {
+  const context = machine.speaker_adapter?.audio_context;
+  const merger = machine.speaker_adapter?.mixer?.node_merger;
+  if (!context || !merger || audioOutputs.has(machine)) return;
+  // The host gain follows the guest mixer, so Windows cannot override mute.
+  // This adapter is intentionally pinned to v86 0.5.476.
+  const gain = context.createGain();
+  gain.gain.value = audioPreference === "muted" ? 0 : 1;
+  merger.disconnect(context.destination);
+  merger.connect(gain);
+  gain.connect(context.destination);
+  audioOutputs.set(machine, { context, gain, merger });
+  context.addEventListener("statechange", () => {
+    if (emulator === machine) enforceAudioPreference();
+  });
 }
 
 function fileInfo(input: HTMLInputElement, label: string, empty: string): void {
@@ -268,11 +292,11 @@ async function start(nextMode: Mode): Promise<void> {
       current.add_listener("emulator-loaded", loaded);
       current.add_listener("download-error", downloadError);
     });
+    attachAudioOutput(current);
     await current.run();
     ready = true;
     placeholder.hidden = true;
     captureInput(false);
-    current.speaker_adapter?.audio_context?.addEventListener("statechange", enforceAudioPreference);
     enforceAudioPreference();
     runningStatus();
   } catch (error) {
@@ -364,13 +388,13 @@ audioButton.addEventListener("click", async () => {
   const context = emulator?.speaker_adapter?.audio_context;
   if (!context || busy || !ready) return;
   try {
-    if (context.state === "running") {
+    if (context.state === "running" && audioPreference !== "muted") {
       audioPreference = "muted";
-      await context.suspend();
     } else {
       audioPreference = "enabled";
-      await context.resume();
     }
+    enforceAudioPreference();
+    await context.resume();
   } catch (error) { showError(error); }
   controls();
 });
@@ -382,6 +406,7 @@ screen.addEventListener("pointerdown", () => {
   void enableAudio();
 });
 screen.addEventListener("focus", () => { if (ready && !busy) captureInput(true); });
+screen.addEventListener("keydown", () => { if (ready && !busy) void enableAudio(); });
 screen.addEventListener("blur", () => captureInput(false));
 window.addEventListener("blur", () => captureInput(false));
 window.addEventListener("keydown", (event) => {

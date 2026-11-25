@@ -47,6 +47,10 @@ Le opzioni avanzate accettano dischi locali IMG/BIN e ISO, che non vengono caric
 
 I test eseguono un vero boot x86, pausa, salvataggio e ripristino con il runtime di produzione; verificano anche configurazione, versione e percorsi del manifest. Il pacchetto CD è stato verificato decomprimendo tutti i blocchi e confrontando l’hash originale.
 
+Nella prova privata con Windows 98 e VMDisp9x sono stati eseguiti l’introduzione video, la schermata principale originale e una sezione con testo scrollabile, con ritorno alla home. È stata configurata la modalità **640 × 480, 24 bit**. Il flusso audio ha prodotto campioni PCM, ma la qualità sonora non è stata ascoltata.
+
+Il controllo audio del lettore usa un gain separato dopo il mixer del sistema ospite. Disattivare il suono non sospende il clock audio: questo evita di bloccare le chiamate multimediali sincrone del programma originale.
+
 Questi test non certificano automaticamente navigazione, audio e filmati del titolo: serve il collaudo con l’immagine e lo stato definitivi. Il loader controlla inizialmente la disponibilità delle risorse; il runtime v86 fissato non espone un callback di errore per tutte le letture successive dei blocchi. In caso di interruzione della connessione, **Ricomincia** ricarica la sessione.
 
 ## Deploy

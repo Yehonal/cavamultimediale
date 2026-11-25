@@ -45,8 +45,11 @@ jobs:
 
       - name: Check for the complete archive configuration
         id: archive
+        env:
+          CAVA_PUBLIC_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/emulator/
         run: |
           if test -f archive.json; then
+            node scripts/check-archive.mjs
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
