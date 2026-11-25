@@ -53,7 +53,7 @@ Lo stato definitivo, compresso con Zstandard, è stato ripristinato in un proces
 
 Il controllo audio del lettore usa un gain separato dopo il mixer del sistema ospite. Disattivare il suono non sospende il clock audio: questo evita di bloccare le chiamate multimediali sincrone del programma originale.
 
-Le prove non coprono ancora tutti i percorsi del titolo né il caricamento completo dal sito pubblico. Il loader controlla inizialmente la disponibilità delle risorse; il runtime v86 fissato non espone un callback di errore per tutte le letture successive dei blocchi. In caso di interruzione della connessione, **Ricomincia** ricarica la sessione.
+Il collaudo non copre tutti i percorsi del titolo. Il loader controlla inizialmente la disponibilità delle risorse; il runtime v86 fissato non espone un callback di errore per tutte le letture successive dei blocchi. In caso di interruzione della connessione, **Ricomincia** ricarica la sessione.
 
 ## Deploy
 
