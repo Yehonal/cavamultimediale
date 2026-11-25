@@ -24,6 +24,16 @@ try {
 for (const file of ["libv86.mjs", "v86.wasm", "v86-fallback.wasm"]) {
   await cp(`node_modules/v86/build/${file}`, `dist/vendor/${file}`);
 }
+// v86 0.5.476 restores the SB16 rate without notifying its browser DAC. The
+// existing rate-change method sends that notification before enabling playback.
+// Guard the exact upstream bundle so a dependency update cannot patch blindly.
+const runtime = await readFile("dist/vendor/libv86.mjs", "utf8");
+const runtimeHash = createHash("sha256").update(runtime).digest("hex");
+const audioRestore = "this.sampling_rate=a[27]";
+if (runtimeHash !== "6027e988d9d891fadeb7799c2ad0b092c65f52dbd899e80e3a37afe068d7f2b7" || runtime.split(audioRestore).length !== 2) {
+  throw new Error("Unexpected v86 bundle: review the saved-audio-rate fix before publishing.");
+}
+await writeFile("dist/vendor/libv86.mjs", runtime.replace(audioRestore, "this.sampling_rate_change(a[27])"));
 for (const [file, expectedHash] of Object.entries(biosFiles)) {
   const cache = path.join(".cache", `${revision}-${file}`);
   let data;
@@ -48,4 +58,17 @@ demo[510] = 0x55;
 demo[511] = 0xaa;
 await writeFile("dist/demo-boot.img", demo);
 await writeFile("dist/.nojekyll", "");
+
+// Version every changed module edge and stylesheet, including the patched
+// runtime, so returning visitors receive matching code and presentation.
+async function version(file) {
+  return createHash("sha256").update(await readFile(`dist/${file}`)).digest("hex").slice(0, 12);
+}
+let app = await readFile("dist/app.js", "utf8");
+app = app.replace('"./vendor/libv86.mjs"', `"./vendor/libv86.mjs?v=${await version("vendor/libv86.mjs")}"`)
+  .replace('"./hosted.js"', `"./hosted.js?v=${await version("hosted.js")}"`);
+await writeFile("dist/app.js", app);
+const html = await readFile("dist/index.html", "utf8");
+await writeFile("dist/index.html", html.replace('href="style.css"', `href="style.css?v=${await version("style.css")}"`)
+  .replace('src="app.js"', `src="app.js?v=${await version("app.js")}"`));
 console.log(`Emulator built in ${root}dist/ (v86 0.5.476, BIOS ${revision}).`);

@@ -36,9 +36,27 @@ test("real x86 boot, pause, snapshot and restore", { timeout: 30_000 }, async ()
     clearTimeout(timer);
     await machine.stop();
     assert.equal(machine.is_running(), false);
+    const sb16 = machine.v86.cpu.devices.sb16;
+    sb16.sampling_rate_change(11_025);
+    const expectedDacEvent = sb16.dma_paused ? "dac-disable" : "dac-enable";
     const state = await machine.save_state();
     assert.ok(state.byteLength > 1024);
+
+    // A fresh host DAC starts at 22050 Hz; restore must publish the saved rate
+    // before enabling playback, otherwise the first 11025 Hz track plays at 2x.
+    sb16.sampling_rate_change(22_050);
+    const audioEvents = [];
+    machine.add_listener("dac-tell-sampling-rate", (rate) => {
+      audioEvents.push({ type: "dac-tell-sampling-rate", rate });
+    });
+    machine.add_listener("dac-enable", () => audioEvents.push({ type: "dac-enable" }));
+    machine.add_listener("dac-disable", () => audioEvents.push({ type: "dac-disable" }));
     await machine.restore_state(state);
+    assert.equal(sb16.sampling_rate, 11_025);
+    assert.deepEqual(audioEvents, [
+      { type: "dac-tell-sampling-rate", rate: 11_025 },
+      { type: expectedDacEvent },
+    ]);
     await machine.run();
     assert.equal(machine.is_running(), true);
     await machine.stop();

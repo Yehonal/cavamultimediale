@@ -6,7 +6,7 @@ Lettore isolato basato su **v86 0.5.476**. Il percorso principale apre automatic
 
 - Il proprietario del progetto ha confermato il **25 novembre 2026** i diritti di pubblicazione del **CD originale e di Windows**, richiedendone l’avvio diretto. [Provenienza, autorizzazione, hash e procedura](MEDIA.md).
 - Il codice di avvio automatico legge `archive.json`, che indica i due dischi e lo stato iniziale. `archive.example.json` ne descrive il formato.
-- Windows 98, il CD e lo stato con Cava già avviata vengono pubblicati in percorsi versionati. La pagina presenta soltanto l’applicazione, i controlli essenziali e la dicitura **Software retrò degli anni ’90**.
+- Windows 98, il CD e lo stato con Cava già avviata vengono pubblicati in percorsi versionati. La pagina presenta soltanto l’applicazione su fondo nero, i controlli essenziali e la dicitura **Edizione originale · 1998**.
 - In assenza di `archive.json`, il workflow compila ed esegue i test, conservando la pagina già pubblicata. La nuova interfaccia non viene distribuita con risorse mancanti.
 
 ## Sviluppo
@@ -52,6 +52,8 @@ Nella prova privata con Windows 98 e VMDisp9x sono stati eseguiti l’introduzio
 Lo stato definitivo, compresso con Zstandard, è stato ripristinato in un processo nuovo con il runtime di produzione, il disco Windows di base e il CD originale. La schermata principale riappare direttamente a **640 × 480, 24 bit**; la CPU continua a eseguire e il flusso PCM riprende. Le parti statiche del panorama e del menu coincidono con la cattura precedente al salvataggio.
 
 Il controllo audio del lettore usa un gain separato dopo il mixer del sistema ospite. Disattivare il suono non sospende il clock audio: questo evita di bloccare le chiamate multimediali sincrone del programma originale.
+
+Il build corregge anche la notifica del sample rate durante il ripristino SB16, verificando l’hash esatto del runtime originale prima di applicare la modifica. Lo stato Cava usa **11.025 Hz**: l’adapter deve ricevere questo valore prima dell’abilitazione audio, invece di mantenere i 22.050 Hz iniziali. Il test di ripristino verifica l’ordine degli eventi. La visualizzazione resta in **4:3** e adatta l’intero canvas al contenitore anche a schermo intero, ignorando il raddoppio automatico delle dimensioni effettuato da v86.
 
 Il collaudo non copre tutti i percorsi del titolo. Il loader controlla inizialmente la disponibilità delle risorse; il runtime v86 fissato non espone un callback di errore per tutte le letture successive dei blocchi. In caso di interruzione della connessione, **Ricomincia** ricarica la sessione.
 
