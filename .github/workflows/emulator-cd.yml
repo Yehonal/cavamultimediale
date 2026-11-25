@@ -24,8 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      CAVA_CD_SOURCE: ${{ runner.temp }}/cava-source/CAVA.iso
-      CAVA_CD_PACKAGE: ${{ runner.temp }}/cava-cd-package
+      CAVA_CD_SOURCE: ${{ github.workspace }}/.cava-source/CAVA.iso
+      CAVA_CD_PACKAGE: ${{ github.workspace }}/.cava-cd-package
     steps:
       - name: Check out the media tools
         uses: actions/checkout@v4
