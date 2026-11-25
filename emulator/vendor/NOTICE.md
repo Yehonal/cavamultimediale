@@ -2,6 +2,8 @@
 
 This directory accompanies the browser emulator runtime. The firmware and emulator are distributed separately from any guest operating system or application disk.
 
+The hosted archive also includes the **VMDisp9x 2D 1.2025.0.119b** display driver, installed in the guest snapshot. Its [MIT license](../media/windows-cava-3ca79c73f61e/VMDISP9X-LICENSE.txt) and [version/source provenance](../media/windows-cava-3ca79c73f61e/VMDISP9X-PROVENANCE.json) accompany the Windows package. The project owner confirmed authorization for Windows and the original Cava CD on 25 November 2026; [the project record](https://github.com/Yehonal/cavamultimediale/blob/emulator-poc/emulator/MEDIA.md) documents that declaration. These permissions do not change the software's original licenses.
+
 ## Components in the distributed files
 
 | Component | Distributed file | Version and source | License files |
