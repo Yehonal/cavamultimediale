@@ -1,0 +1,69 @@
+name: Publish original CD media
+
+on:
+  push:
+    branches: [emulator-poc]
+    paths:
+      - "emulator/scripts/download-cd.py"
+      - "emulator/scripts/package-media.py"
+      - "emulator/requirements-media.txt"
+      - ".github/workflows/emulator-cd.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: emulator-pages
+  cancel-in-progress: false
+
+jobs:
+  package-and-publish:
+    if: github.ref == 'refs/heads/emulator-poc'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CAVA_CD_SOURCE: ${{ runner.temp }}/cava-source/CAVA.iso
+      CAVA_CD_PACKAGE: ${{ runner.temp }}/cava-cd-package
+    steps:
+      - name: Check out the media tools
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: emulator
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: emulator/requirements-media.txt
+
+      - name: Install pinned media dependencies
+        run: python -m pip install -r emulator/requirements-media.txt
+
+      - name: Download and verify the original CD
+        run: python emulator/scripts/download-cd.py --output "$CAVA_CD_SOURCE"
+
+      - name: Package verified CD chunks
+        run: >-
+          python emulator/scripts/package-media.py
+          "$CAVA_CD_SOURCE" "$CAVA_CD_PACKAGE"
+          --expected-sha256 f8cfdc7753c9d712750f13a2d4f60f6e6ff3796673b9342876d07f2dff284704
+          --expected-size 645816320
+
+      - name: Publish only the CD package
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ${{ env.CAVA_CD_PACKAGE }}
+          destination_dir: emulator/media/cava-f8cfdc7753c9
+          keep_files: true
+          commit_message: "Publish verified original CD chunks"
+
+      # GITHUB_TOKEN commits do not automatically trigger the Pages build.
+      - name: Request a GitHub Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${{ github.repository }}/pages/builds"
