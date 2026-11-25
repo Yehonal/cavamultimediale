@@ -4,21 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#eee9df" />
-    <meta name="description" content="Un prototipo per esplorare il CD-ROM originale di Cava de’ Tirreni Multimediale attraverso un emulatore nel browser." />
-    <title>Cava de’ Tirreni Multimediale · Emulatore</title>
+    <meta name="description" content="Cava de’ Tirreni Multimediale: il CD-ROM originale del 1998, nel browser." />
+    <title>Cava de’ Tirreni Multimediale · Il CD originale</title>
     <link rel="stylesheet" href="style.css" />
     <script type="module" src="app.js"></script>
   </head>
   <body>
-    <a class="skip-link" href="#windows-image">Vai ai file</a>
+    <a class="skip-link" href="#screen-container">Vai allo schermo</a>
     <div class="page-shell">
       <header class="page-header">
-        <div>
-          <p class="eyebrow">Archivio multimediale · 1998</p>
-          <h1>Cava de’ Tirreni <span>Multimediale</span></h1>
-          <p class="subtitle">Il CD-ROM originale, nel browser.</p>
-        </div>
-        <span class="prototype-badge">Prototipo</span>
+        <p class="eyebrow">Archivio multimediale · 1998</p>
+        <h1>Cava de’ Tirreni <span>Multimediale</span></h1>
+        <p class="subtitle">Il CD-ROM originale, nel browser.</p>
       </header>
 
       <main class="workspace">
@@ -26,11 +23,11 @@
           <div class="machine-window">
             <div class="window-titlebar">
               <h2 id="emulator-heading"><span class="window-icon" aria-hidden="true"></span>Cava Multimediale</h2>
-              <span id="mode-label">Emulatore</span>
+              <span id="mode-label">CD originale</span>
             </div>
             <div class="screen-scroll">
               <div id="screen-frame">
-                <div id="screen-container" tabindex="0" aria-label="Schermo del computer emulato. Clicca qui per usare la tastiera.">
+                <div id="screen-container" tabindex="0" aria-label="Schermo di Cava Multimediale. Premi Control, Alt ed Escape per tornare ai controlli.">
                   <div class="text-screen"></div>
                   <canvas style="display: none"></canvas>
                 </div>
@@ -41,75 +38,86 @@
                     <circle cx="36" cy="36" r="4" fill="currentColor" />
                     <path d="M16 17L27 28M45 44L56 55M20 14L30 25M43 47L53 58" stroke="currentColor" stroke-width="1" />
                   </svg>
-                  <p class="screen-kicker">Cava de’ Tirreni · 1998</p>
-                  <p class="screen-message">Un piccolo viaggio<br />nel tempo.</p>
-                  <p class="screen-instruction">Scegli il disco Windows e il CD originale per iniziare.</p>
+                  <p class="screen-kicker">Il CD-ROM del 1998</p>
+                  <p class="screen-message">Cava de’ Tirreni<br /><span>Multimediale</span></p>
+                  <p class="screen-instruction">Archivio originale</p>
                 </div>
               </div>
             </div>
-            <div class="machine-toolbar" aria-label="Controlli dell’emulatore">
+            <div class="machine-toolbar" aria-label="Controlli della visita">
               <button id="pause-button" type="button" disabled>Pausa</button>
               <button id="restart-button" type="button" disabled>Riavvia</button>
               <button id="fullscreen-button" type="button" disabled>Schermo intero</button>
-              <button id="save-button" type="button" disabled>Salva sessione</button>
+              <button id="audio-button" type="button" aria-pressed="false" disabled>Attiva audio</button>
             </div>
           </div>
           <div class="status-block">
-            <p id="status-text" role="status" aria-live="polite">In attesa dei file</p>
-            <p id="status-detail">Puoi anche verificare che l’emulatore funzioni, senza caricare Windows.</p>
-            <progress id="progress-bar" max="100" value="0" hidden aria-label="Caricamento dell’emulatore"></progress>
+            <p id="status-text" role="status" aria-live="polite" aria-atomic="true">Preparazione della visita</p>
+            <p id="status-detail">Verifica della disponibilità dell’archivio.</p>
+            <progress id="progress-bar" max="100" hidden aria-label="Caricamento del CD originale"></progress>
             <p id="error-message" role="alert" hidden></p>
+            <noscript><p class="noscript-note">Per aprire il CD originale, abilita JavaScript nel browser.</p></noscript>
           </div>
-          <p class="keyboard-note">Clicca nello schermo per usare la tastiera. Ctrl + Alt + Esc torna ai controlli della pagina. La composizione originale resta a 640 × 480.</p>
+          <p class="keyboard-note">Clicca nello schermo per interagire. <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Esc</kbd> torna ai controlli.</p>
         </section>
 
-        <aside class="setup-panel" aria-labelledby="setup-heading">
-          <p class="panel-kicker">Prepara la visita</p>
-          <h2 id="setup-heading">Apri i tuoi file</h2>
-          <p class="setup-description">Usa un disco con Windows già installato e l’immagine del CD-ROM originale.</p>
-          <div class="file-field">
-            <label for="windows-image"><span class="step-number" aria-hidden="true">1</span>Disco di Windows</label>
-            <p id="windows-hint" class="field-hint">Windows 95 o 98 già installato su un disco IMG o BIN non compresso, con driver video High Color a 16 bit. La macchina usa 128 MB di RAM.</p>
-            <input id="windows-image" type="file" accept=".img,.bin" aria-describedby="windows-hint windows-file-info" />
-            <p id="windows-file-info" class="file-info">Nessun disco selezionato.</p>
-          </div>
-          <div class="file-field">
-            <label for="cd-image"><span class="step-number" aria-hidden="true">2</span>CD originale</label>
-            <p id="cd-hint" class="field-hint">L’immagine ISO di Cava Multimediale.</p>
-            <input id="cd-image" type="file" accept=".iso" aria-describedby="cd-hint cd-file-info" />
-            <p id="cd-file-info" class="file-info">Nessun CD selezionato.</p>
-          </div>
-          <details class="saved-session">
-            <summary>Riprendi uno stato salvato <span>facoltativo</span></summary>
-            <div class="file-field">
-              <label for="saved-state">Stato dell’emulatore</label>
-              <p id="state-hint" class="field-hint">Seleziona lo stato insieme al disco Windows corrispondente e allo stesso CD.</p>
-              <input id="saved-state" type="file" accept=".bin,.v86state,.state,.zst" aria-describedby="state-hint state-file-info" />
-              <p id="state-file-info" class="file-info">Avvio normale di Windows.</p>
+        <details class="advanced-options">
+          <summary>Opzioni avanzate</summary>
+          <div class="advanced-content">
+            <section class="setup-panel" aria-labelledby="setup-heading">
+              <h2 id="setup-heading">Usa una copia locale</h2>
+              <p class="setup-description">Per aprire i tuoi dischi o riprendere una sessione salvata.</p>
+              <div class="file-grid">
+                <div class="file-field">
+                  <label for="windows-image">Disco di Windows</label>
+                  <p id="windows-hint" class="field-hint">Windows 95 o 98 già installato su un disco IMG o BIN non compresso, con driver video High Color a 16 bit.</p>
+                  <input id="windows-image" type="file" accept=".img,.bin" aria-describedby="windows-hint windows-file-info" />
+                  <p id="windows-file-info" class="file-info">Nessun disco selezionato.</p>
+                </div>
+                <div class="file-field">
+                  <label for="cd-image">CD originale</label>
+                  <p id="cd-hint" class="field-hint">L’immagine ISO del CD-ROM di Cava Multimediale.</p>
+                  <input id="cd-image" type="file" accept=".iso" aria-describedby="cd-hint cd-file-info" />
+                  <p id="cd-file-info" class="file-info">Nessun CD selezionato.</p>
+                </div>
+              </div>
+              <details class="saved-session">
+                <summary>Riprendi uno stato salvato <span>facoltativo</span></summary>
+                <div class="file-field">
+                  <label for="saved-state">Stato dell’emulatore</label>
+                  <p id="state-hint" class="field-hint">Seleziona lo stato insieme al disco Windows corrispondente e allo stesso CD.</p>
+                  <input id="saved-state" type="file" accept=".bin,.v86state,.state,.zst" aria-describedby="state-hint state-file-info" />
+                  <p id="state-file-info" class="file-info">Avvio normale di Windows.</p>
+                </div>
+              </details>
+              <div class="start-actions">
+                <button id="start-button" class="primary-button" type="button" disabled>Avvia da file</button>
+              </div>
+              <p class="privacy-note">I file selezionati restano sul tuo dispositivo.</p>
+            </section>
+            <div class="session-tools">
+              <p class="field-hint">Puoi conservare la sessione corrente o verificare il funzionamento dell’emulatore.</p>
+              <div class="session-actions">
+                <button id="save-button" class="secondary-button" type="button" disabled>Salva sessione</button>
+                <button id="demo-button" class="secondary-button" type="button">Verifica emulatore</button>
+              </div>
             </div>
-          </details>
-          <div class="start-actions">
-            <button id="start-button" class="primary-button" type="button" disabled>Avvia da file <span aria-hidden="true">↗</span></button>
-            <button id="demo-button" class="secondary-button" type="button">Verifica emulatore</button>
+            <details class="saved-session">
+              <summary>Guida per i dischi locali</summary>
+              <p class="field-hint">Da Start → Esegui, apri <code>D:\RUN\RUN.EXE</code>. Se il programma richiede l’installazione, esegui <code>D:\SETUP\SETUP.EXE</code>. La lettera del CD può cambiare in base al disco Windows.</p>
+              <p class="field-hint">In Proprietà dello schermo di Windows, imposta 640 × 480 e almeno 65.536 colori (High Color, 16 bit). Se compaiono solo 2 o 16 colori, serve un driver SVGA/VBE compatibile. La macchina usa 128 MB di RAM.</p>
+              <p class="field-hint">Salva la sessione prima di chiudere la pagina. Per riprenderla, conserva anche gli stessi dischi di base: il browser non modifica i file originali.</p>
+            </details>
           </div>
-          <p class="privacy-note">I file selezionati restano sul tuo dispositivo.</p>
-          <p class="availability-note">Windows e il CD non sono inclusi. Launcher e installazione originali sono stati verificati in Windows 98 con v86; navigazione completa, audio e video sono ancora da verificare.</p>
-          <details class="saved-session">
-            <summary>Come aprire il CD in Windows</summary>
-            <p class="field-hint">Da Start → Esegui, apri <code>D:\RUN\RUN.EXE</code>. Se il programma richiede l’installazione, esegui <code>D:\SETUP\SETUP.EXE</code>. La lettera del CD può cambiare in base al disco Windows.</p>
-            <p class="field-hint">In Proprietà dello schermo di Windows, imposta 640 × 480 e almeno 65.536 colori (High Color, 16 bit). Se compaiono solo 2 o 16 colori, manca un driver SVGA/VBE compatibile: il programma originale non può proseguire con il driver VGA standard.</p>
-            <p class="field-hint">Salva la sessione prima di chiudere la pagina: le modifiche alla macchina restano in memoria, il disco originale non viene modificato.</p>
-          </details>
-        </aside>
+        </details>
       </main>
 
       <footer class="page-footer">
-        <p>Un progetto di preservazione di Cava de’ Tirreni Multimediale.</p>
+        <p>Cava de’ Tirreni Multimediale · AMI Informatica, 1998</p>
         <nav aria-label="Collegamenti del progetto">
           <a href="../">Versione web</a>
-          <a href="https://github.com/Yehonal/cavamultimediale/tree/emulator-poc" target="_blank" rel="noopener noreferrer">Codice sorgente <span aria-hidden="true">↗</span></a>
-          <a href="https://github.com/copy/v86" target="_blank" rel="noopener noreferrer">v86 <span aria-hidden="true">↗</span></a>
-          <a href="vendor/NOTICE.md">Licenze</a>
+          <a href="https://github.com/Yehonal/cavamultimediale/tree/emulator-poc" target="_blank" rel="noopener noreferrer">Il progetto <span aria-hidden="true">↗</span></a>
+          <a href="vendor/NOTICE.md">Crediti e licenze</a>
         </nav>
       </footer>
     </div>

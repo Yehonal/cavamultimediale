@@ -4,6 +4,9 @@ export interface DiskImage {
   url?: string;
   buffer?: File | ArrayBuffer;
   async?: boolean;
+  size?: number;
+  use_parts?: boolean;
+  fixed_chunk_size?: number;
 }
 
 export interface EmulatorOptions {
@@ -17,6 +20,7 @@ export interface EmulatorOptions {
   cdrom?: DiskImage;
   fda?: DiskImage;
   initial_state?: DiskImage;
+  mac_address_translation?: boolean;
   autostart: boolean;
 }
 
@@ -43,4 +47,5 @@ export class V86 {
   keyboard_send_scancodes(codes: number[]): Promise<void>;
   mouse_set_enabled(enabled: boolean): void;
   speaker_adapter?: { audio_context?: AudioContext };
+  zstd_worker?: Worker | null;
 }

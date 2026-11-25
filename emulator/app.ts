@@ -1,4 +1,5 @@
 import { V86, type EmulatorOptions } from "./vendor/libv86.mjs";
+import { parseArchive, type Archive } from "./hosted.js";
 
 function element<T extends HTMLElement>(id: string): T {
   const found = document.getElementById(id);
@@ -15,6 +16,7 @@ const pauseButton = element<HTMLButtonElement>("pause-button");
 const restartButton = element<HTMLButtonElement>("restart-button");
 const fullscreenButton = element<HTMLButtonElement>("fullscreen-button");
 const saveButton = element<HTMLButtonElement>("save-button");
+const audioButton = element<HTMLButtonElement>("audio-button");
 const screen = element<HTMLDivElement>("screen-container");
 const progress = element<HTMLProgressElement>("progress-bar");
 const errorMessage = element<HTMLParagraphElement>("error-message");
@@ -22,14 +24,40 @@ const placeholder = element<HTMLDivElement>("screen-placeholder");
 const statusText = element<HTMLParagraphElement>("status-text");
 const statusDetail = element<HTMLParagraphElement>("status-detail");
 
-type Mode = "demo" | "windows";
+type Mode = "archive" | "demo" | "windows";
 let emulator: V86 | undefined;
-let mode: Mode = "demo";
+let mode: Mode = "archive";
 let ready = false;
 let busy = false;
 let demoPassed = false;
 let activeDiskName = "windows";
 let rejectStartup: ((error: Error) => void) | undefined;
+let archive: Archive | undefined;
+let audioPreference: "auto" | "enabled" | "muted" = "auto";
+
+async function hostedImages(): Promise<Pick<EmulatorOptions, "hda" | "cdrom" | "initial_state" | "memory_size" | "vga_memory_size">> {
+  const url = new URL("archive.json", window.location.href);
+  const response = await fetch(url, { cache: "no-cache", signal: AbortSignal.timeout(30_000) });
+  if (!response.ok) throw new Error("L’archivio non è disponibile in questo momento. Premi Riprova tra poco.");
+  archive = parseArchive(await response.json(), url.href);
+  const firstChunk = (image: Archive["hda"]): string => {
+    const virtualUrl = new URL(image.url!);
+    return new URL(`0-${image.fixed_chunk_size}.img.zst`, virtualUrl).href;
+  };
+  const resources = [firstChunk(archive.hda), firstChunk(archive.cdrom), archive.initialState.url!];
+  await Promise.all(resources.map(async (resourceUrl) => {
+    const check = await fetch(resourceUrl, { method: "HEAD", signal: AbortSignal.timeout(30_000) });
+    if (!check.ok) throw new Error("L’archivio è incompleto o temporaneamente non raggiungibile. Premi Riprova tra poco.");
+  }));
+  activeDiskName = archive.id;
+  return {
+    hda: archive.hda,
+    cdrom: archive.cdrom,
+    initial_state: archive.initialState,
+    memory_size: archive.memorySize,
+    vga_memory_size: archive.videoMemorySize,
+  };
+}
 
 function status(title: string, detail: string): void {
   statusText.textContent = title;
@@ -46,7 +74,13 @@ function controls(): void {
   demoButton.disabled = busy;
   for (const input of [diskInput, cdInput, stateInput]) input.disabled = busy;
   for (const button of [pauseButton, restartButton, fullscreenButton]) button.disabled = busy || !ready;
+  restartButton.disabled = busy || (!ready && mode !== "archive");
+  restartButton.textContent = mode === "archive" ? (ready ? "Ricomincia" : "Riprova") : "Riavvia";
   saveButton.disabled = busy || !ready || mode !== "windows";
+  audioButton.disabled = busy || !ready || !emulator?.speaker_adapter?.audio_context;
+  const audioEnabled = emulator?.speaker_adapter?.audio_context?.state === "running";
+  audioButton.textContent = audioEnabled ? "Disattiva audio" : "Attiva audio";
+  audioButton.setAttribute("aria-pressed", String(audioEnabled));
   pauseButton.textContent = emulator?.is_running() ? "Pausa" : "Riprendi";
 }
 
@@ -57,6 +91,8 @@ function runningStatus(): void {
     status(demoPassed ? "Emulatore verificato" : "Verifica in corso", demoPassed
       ? "Il processore emulato ha eseguito il disco di prova. Ora puoi scegliere Windows e il CD."
       : "Avvio del disco di prova, senza Windows e senza il CD originale.");
+  } else if (mode === "archive") {
+    status("Cava Multimediale", "Clicca nell’applicazione per iniziare la visita. Puoi attivare l’audio dai controlli.");
   } else {
     status("Computer virtuale avviato", "Attendi Windows, poi apri D:\\RUN\\RUN.EXE da Start → Esegui. Clicca nello schermo per usare mouse, tastiera e audio.");
   }
@@ -67,12 +103,34 @@ function captureInput(enabled: boolean): void {
   emulator?.mouse_set_enabled(enabled);
 }
 
+async function dispose(machine: V86): Promise<void> {
+  try {
+    await machine.destroy();
+  } finally {
+    // The pinned upstream destroy() does not release its decompression worker.
+    machine.zstd_worker?.terminate();
+    machine.zstd_worker = null;
+  }
+}
+
 async function enableAudio(): Promise<void> {
+  if (audioPreference === "muted") return;
   try {
     await emulator?.speaker_adapter?.audio_context?.resume();
+    controls();
   } catch {
     // Browsers may require another explicit click before enabling sound.
   }
+}
+
+function enforceAudioPreference(): void {
+  const context = emulator?.speaker_adapter?.audio_context;
+  // v86 resumes its AudioContext whenever the CPU starts. Keep an explicit
+  // visitor mute across pause/resume and snapshot restarts.
+  if (audioPreference === "muted" && context?.state === "running") {
+    void context.suspend().catch(() => undefined);
+  }
+  controls();
 }
 
 function fileInfo(input: HTMLInputElement, label: string, empty: string): void {
@@ -118,21 +176,26 @@ async function start(nextMode: Mode): Promise<void> {
   busy = true;
   errorMessage.hidden = true;
   controls();
+  status(nextMode === "archive" ? "Preparazione di Cava Multimediale" : "Caricamento dell’emulatore", "L’applicazione si avvierà appena il caricamento è completo.");
+  progress.hidden = false;
+  progress.removeAttribute("value");
   let replacing = false;
   try {
-    const images = nextMode === "windows" ? await localImages() : { fda: { url: "demo-boot.img" } };
+    const images = nextMode === "archive" ? await hostedImages()
+      : nextMode === "windows" ? await localImages()
+      : { fda: { url: "demo-boot.img" } };
     replacing = true;
     ready = false;
-    if (emulator) await emulator.destroy();
+    if (emulator) await dispose(emulator);
     emulator = undefined;
     screen.replaceChildren(Object.assign(document.createElement("div"), { className: "text-screen" }), document.createElement("canvas"));
     const canvas = screen.querySelector("canvas");
     if (canvas) canvas.style.display = "none";
-    placeholder.hidden = true;
+    placeholder.hidden = false;
     mode = nextMode;
     demoPassed = false;
-    element("mode-label").textContent = mode === "demo" ? "Verifica" : "Windows · CD originale";
-    status("Caricamento dell’emulatore", "Preparazione della macchina virtuale…");
+    element("mode-label").textContent = mode === "demo" ? "Verifica" : mode === "archive" ? "Edizione originale" : "Disco locale";
+    status(mode === "archive" ? "Caricamento di Cava Multimediale" : "Caricamento dell’emulatore", "Preparazione dell’applicazione originale…");
     progress.hidden = false;
     progress.removeAttribute("value");
 
@@ -143,6 +206,7 @@ async function start(nextMode: Mode): Promise<void> {
       memory_size: 128 * 1024 * 1024,
       vga_memory_size: 8 * 1024 * 1024,
       screen: { container: screen },
+      mac_address_translation: true,
       ...images,
       autostart: false,
     });
@@ -154,7 +218,7 @@ async function start(nextMode: Mode): Promise<void> {
     current.add_listener("emulator-loaded", () => {
       current.keyboard_set_enabled(false);
       current.mouse_set_enabled(false);
-      if (emulator !== current) void current.destroy().catch(() => undefined);
+      if (emulator !== current) void dispose(current).catch(() => undefined);
     });
     let serial = "";
     current.add_listener("serial0-output-byte", (byte) => {
@@ -166,12 +230,20 @@ async function start(nextMode: Mode): Promise<void> {
     });
     current.add_listener("download-progress", (event) => {
       if (ready) return;
-      statusDetail.textContent = `Caricamento: ${event.file_name.split("/").pop() ?? "runtime"}`;
+      const percentage = event.total ? Math.round(event.loaded / event.total * 100) : 0;
+      statusDetail.textContent = mode === "archive"
+        ? `Preparazione della visita${percentage ? ` · ${percentage}%` : "…"}`
+        : `Caricamento: ${event.file_name.split("/").pop() ?? "runtime"}`;
       if (event.lengthComputable && event.total) progress.value = event.loaded / event.total * 100;
       else progress.removeAttribute("value");
     });
+    current.add_listener("download-error", () => {
+      if (emulator !== current || !ready) return;
+      showError(new Error("Una parte dell’archivio non è stata caricata. Controlla la connessione e premi Ricomincia."));
+    });
     for (const name of ["emulator-started", "emulator-stopped"] as const) {
       current.add_listener(name, () => {
+        if (emulator === current) enforceAudioPreference();
         if (emulator === current && ready && !busy) {
           runningStatus();
           controls();
@@ -179,7 +251,7 @@ async function start(nextMode: Mode): Promise<void> {
       });
     }
     await new Promise<void>((resolve, reject) => {
-      const timeout = window.setTimeout(() => finish(new Error("Caricamento non riuscito. Ricarica la pagina e controlla la connessione; per riprendere uno stato servono la stessa versione e gli stessi dischi.")), 90_000);
+      const timeout = window.setTimeout(() => finish(new Error("Il caricamento sta richiedendo troppo tempo. Controlla la connessione e premi Riprova.")), 180_000);
       function finish(error?: Error): void {
         window.clearTimeout(timeout);
         rejectStartup = undefined;
@@ -198,16 +270,22 @@ async function start(nextMode: Mode): Promise<void> {
     });
     await current.run();
     ready = true;
+    placeholder.hidden = true;
     captureInput(false);
+    current.speaker_adapter?.audio_context?.addEventListener("statechange", enforceAudioPreference);
+    enforceAudioPreference();
     runningStatus();
   } catch (error) {
     if (replacing) {
       ready = false;
-      try { await emulator?.destroy(); } catch { /* Failed initialization may not expose a CPU yet. */ }
+      try { if (emulator) await dispose(emulator); } catch { /* Failed initialization may not expose a CPU yet. */ }
       emulator = undefined;
       placeholder.hidden = false;
-      status("Avvio non riuscito", "Controlla i file e riprova. Un’ISO di installazione Windows non sostituisce il disco già installato.");
+      status("Avvio non riuscito", nextMode === "archive"
+        ? "Premi Riprova per caricare nuovamente l’applicazione."
+        : "Controlla i file e riprova. Serve un disco con Windows già installato.");
     }
+    if (!replacing && nextMode === "archive") status("Archivio non disponibile", "Premi Riprova per caricare nuovamente l’applicazione.");
     showError(error);
   } finally {
     rejectStartup = undefined;
@@ -234,6 +312,7 @@ pauseButton.addEventListener("click", async () => {
 });
 
 restartButton.addEventListener("click", async () => {
+  if (mode === "archive" && !busy) { void start("archive"); return; }
   if (!emulator || busy || !ready) return;
   if (mode === "windows" && !window.confirm("Riavviare Windows? I dati non salvati nei programmi possono andare persi.")) return;
   busy = true;
@@ -281,6 +360,21 @@ saveButton.addEventListener("click", async () => {
   }
 });
 
+audioButton.addEventListener("click", async () => {
+  const context = emulator?.speaker_adapter?.audio_context;
+  if (!context || busy || !ready) return;
+  try {
+    if (context.state === "running") {
+      audioPreference = "muted";
+      await context.suspend();
+    } else {
+      audioPreference = "enabled";
+      await context.resume();
+    }
+  } catch (error) { showError(error); }
+  controls();
+});
+
 screen.addEventListener("pointerdown", () => {
   if (!ready || busy) return;
   screen.focus();
@@ -314,3 +408,4 @@ window.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => 
   rejectStartup(new Error(`Impossibile avviare l’emulatore: ${event.reason instanceof Error ? event.reason.message : String(event.reason)}`));
 });
 controls();
+void start("archive");

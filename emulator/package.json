@@ -6,7 +6,7 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node --test scripts/emulator.test.mjs",
+    "test": "node --test scripts/*.test.mjs",
     "serve": "node scripts/serve.mjs"
   },
   "dependencies": { "v86": "0.5.476" },

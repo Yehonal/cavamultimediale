@@ -43,7 +43,18 @@ jobs:
       - name: Test the emulator
         run: npm test
 
+      - name: Check for the complete archive configuration
+        id: archive
+        run: |
+          if test -f archive.json; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Automatic launch is built and tested. Keep the existing site until the complete archive is configured." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Publish to the emulator subdirectory
+        if: steps.archive.outputs.ready == 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -55,6 +66,7 @@ jobs:
 
       # Commits made with GITHUB_TOKEN do not automatically trigger Pages.
       - name: Request a GitHub Pages build
+        if: steps.archive.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api --method POST "repos/${{ github.repository }}/pages/builds"

@@ -1,14 +1,17 @@
-# Cava Multimediale · Prototipo di emulazione
+# Cava Multimediale · Esecuzione originale
 
-Pagina autonoma per provare il CD-ROM originale con **v86 0.5.476**. Il prototipo è separato dalla ricostruzione React e viene pubblicato su `/cavamultimediale/emulator/`.
+Lettore isolato basato su **v86 0.5.476**. Il percorso principale apre automaticamente il CD originale da uno stato con Cava già avviata, a **640 × 480**. File locali e diagnostica restano nelle **Opzioni avanzate**.
 
-La macchina usa **128 MiB di RAM**. Il programma originale è a 16 bit e richiede il runtime Visual Basic 4. La compatibilità completa di navigazione, audio e video è ancora in verifica.
+## Stato della pubblicazione
 
-Verifica del prototipo: boot x86, pausa e salvataggio/ripristino superati con il runtime di produzione. In una macchina Windows 98 privata sono stati avviati il launcher originale con selezione IT/EN e l’installer, che ha confermato il completamento dell’installazione. `CAVA.EXE` si avvia ma richiede almeno 64K colori; l’immagine di prova usa il driver VGA standard con sole 2/16 tonalità. La schermata principale, la navigazione e la riproduzione audio/video restano quindi da verificare con un driver SVGA/VBE compatibile e High Color a 16 bit.
+- Il proprietario del progetto ha confermato il **25 novembre 2026** i diritti di pubblicazione del **CD originale**. Il CD è pubblicato in blocchi verificati: [provenienza, hash e procedura](MEDIA.md).
+- Il codice di avvio automatico legge `archive.json`, che indica i due dischi e lo stato iniziale. `archive.example.json` ne descrive il formato.
+- L’immagine Windows 98 delle prove ha una licenza **OEM**. Non è inclusa nel pacchetto CD; non è ancora stato confermato un diritto separato di ridistribuirla sul sito.
+- In assenza di `archive.json`, il workflow compila ed esegue i test, conservando la pagina già pubblicata. La nuova interfaccia non viene distribuita con risorse mancanti.
 
-## Avvio locale
+## Sviluppo
 
-Con Node.js 22, dalla cartella `emulator/`:
+Richiede Node.js 22 o superiore:
 
 ```sh
 npm ci
@@ -17,44 +20,37 @@ npm test
 npm run serve
 ```
 
-Aprire [http://localhost:4173](http://localhost:4173). Il comando **Verifica emulatore** avvia una piccola dimostrazione originale di boot, senza Windows e senza il CD, per controllare il funzionamento dell’emulatore.
+Aprire [http://localhost:4173](http://localhost:4173). Per l’avvio automatico occorrono `archive.json` e i relativi file sotto `dist/media/`. Gli URL del manifest sono relativi alla pagina e devono appartenere alla stessa pubblicazione.
 
-## Provare il CD
+Per una prova senza sistema operativo: **Opzioni avanzate → Verifica emulatore**. Il disco di prova è codice originale del progetto, senza contenuti Microsoft o del CD.
 
-1. Selezionare un disco **IMG/BIN in formato raw**, con Windows 95 o Windows 98 già installato. Un’ISO di installazione di Windows non è un disco pronto all’avvio.
-2. Selezionare l’ISO del CD-ROM di Cava Multimediale.
-3. Avviare la macchina. In Windows, eseguire `D:\RUN\RUN.EXE`; se occorre installare il programma, eseguire `D:\SETUP\SETUP.EXE`. La lettera dell’unità CD può variare.
-4. Se necessario, installare il runtime Video for Windows incluso in `D:\VIDEO\SETUP.EXE`. Verificare anche la disponibilità del codec Cinepak nel sistema ospite se i video non vengono riprodotti.
+## Preparare l’archivio completo
 
-Configurare il sistema ospite a **640 × 480, colori a 16 bit**: il programma originale rifiuta modalità con meno di 65.536 colori. Se Windows mostra soltanto 2/16 colori, installare prima un driver SVGA/VBE compatibile con v86; il driver VGA standard non basta. Il prototipo non modifica né decompila l’eseguibile del CD.
+1. Usare un’immagine Windows con diritti adatti alla pubblicazione e un driver SVGA compatibile. Cava richiede almeno **65.536 colori**; il driver VGA standard non basta.
+2. Installare il titolo tramite `D:\SETUP\SETUP.EXE` e aprire `C:\CAVA\CAVA.EXE`. Il launcher è `D:\RUN\RUN.EXE`; la lettera del CD può variare.
+3. Impostare **640 × 480**, almeno 16 bit di colore. La configurazione di riferimento usa **128 MiB di RAM** e **8 MiB di memoria video**.
+4. Salvare uno stato con Cava pronta, CD originale montato e nessun floppy di installazione. Verificare il ripristino con gli stessi dischi di base, versione v86 e configurazione.
+5. Comprimere lo stato con Zstandard e preparare i dischi con `scripts/package-media.py`, secondo [MEDIA.md](MEDIA.md). Non sostituire la base dopo la verifica: deve corrispondere alle modifiche contenute nello stato.
+6. Pubblicare le risorse in percorsi versionati, compilare `archive.json` e collaudare l’intero percorso prima dell’attivazione.
 
-I file selezionati sono letti dal browser sul dispositivo dell’utente: **non vengono caricati su un server**. Windows e l’ISO del CD non sono inclusi nel sito né nel repository. Le istruzioni del progetto in [`../AGENTS.md`](../AGENTS.md) richiedono diritti appropriati prima di distribuirli.
+Il driver **VMDisp9x 2D 1.2025.0.119b**, MIT, offre il profilo **VESA ISA Adapter**: [release originale](https://github.com/JHRobotics/vmdisp9x/releases/tag/v1.2025.0.119). Non modifica l’eseguibile Cava.
 
-Cliccare nello schermo per inviare mouse e tastiera alla macchina. Premere **Ctrl + Alt + Esc** per tornare ai controlli della pagina senza usare il mouse.
+## Controlli
 
-## Riprendere una sessione
+L’app si avvia al caricamento della pagina. **Ricomincia** ripristina lo stato iniziale; **Pausa** sospende la macchina; **Schermo intero** mantiene la composizione originale. L’audio si abilita con un’interazione dell’utente, come richiesto dai browser. La scelta di disattivarlo resta valida dopo pausa e ripresa.
 
-Premere **Salva sessione** prima di chiudere la pagina. Lo stato include la memoria della macchina e i blocchi del disco modificati nella sessione. Riaprirlo con **la stessa versione di v86, la stessa configurazione e gli stessi file di base** Windows e CD. Il browser non modifica il file del disco originale; lo stato non sostituisce questi file.
+Cliccare nello schermo per inviare mouse e tastiera alla macchina. **Ctrl + Alt + Esc** restituisce il focus ai controlli della pagina.
 
-## CD di riferimento
+Le opzioni avanzate accettano dischi locali IMG/BIN e ISO, che non vengono caricati su un server né modificati. **Salva sessione** è disponibile solo nella modalità locale; lo stato va riaperto con gli stessi file di base.
 
-La copia esaminata è quella indicata nella pagina [CD originale del repository](https://github.com/Yehonal/cavamultimediale/blob/react-v1/src/pages/projectinfo-pages/i-origin.tsx).
+## Verifica e limiti
 
-| Proprietà | Valore |
-|---|---|
-| Nome | `CAVA.iso` |
-| Dimensione | `645816320` byte |
-| SHA-256 | `f8cfdc7753c9d712750f13a2d4f60f6e6ff3796673b9342876d07f2dff284704` |
-| Autorun | `RUN\RUN.EXE` |
+I test eseguono un vero boot x86, pausa, salvataggio e ripristino con il runtime di produzione; verificano anche configurazione, versione e percorsi del manifest. Il pacchetto CD è stato verificato decomprimendo tutti i blocchi e confrontando l’hash originale.
 
-L’hash permette di riconoscere la copia di riferimento; non attesta diritti di distribuzione.
+Questi test non certificano automaticamente navigazione, audio e filmati del titolo: serve il collaudo con l’immagine e lo stato definitivi. Il loader controlla inizialmente la disponibilità delle risorse; il runtime v86 fissato non espone un callback di errore per tutte le letture successive dei blocchi. In caso di interruzione della connessione, **Ricomincia** ricarica la sessione.
 
-## Pubblicazione
+## Deploy
 
-Il workflow [`emulator-pages.yml`](../.github/workflows/emulator-pages.yml) esegue installazione, build e test su Node.js 22 quando cambia il prototipo nella branch `emulator-poc`. Pubblica esclusivamente `emulator/dist` nella sottocartella `emulator` della branch `gh-pages`, usando il token integrato di GitHub e preservando gli altri file del sito. Richiede poi esplicitamente la build di GitHub Pages: i commit prodotti da `GITHUB_TOKEN` non la attivano da soli. Non dipende dalla vecchia chiave SSH `ACTIONS_DEPLOY_KEY`, risultata non autorizzata durante il primo tentativo.
+`emulator-pages.yml` compila e verifica il lettore su ogni modifica in `emulator-poc`, pubblicandolo in `gh-pages/emulator` quando esiste la configurazione completa. `emulator-cd.yml` pubblica il CD separatamente. Condividono il gruppo di concorrenza, preservano gli altri file del sito e usano il token integrato di GitHub con richiesta esplicita della build Pages.
 
-Il workflow include anche `workflow_dispatch`; GitHub espone l’avvio manuale quando il file è presente sulla branch predefinita. La pubblicazione riguarda il lettore e i componenti redistribuibili dell’emulatore, non immagini Windows o contenuti del CD.
-
-Il workflow React su `react-v1` attualmente ripulisce `gh-pages` a ogni deploy. Prima del prossimo deploy React, integrare anche la modifica `keep_files: true` contenuta in questa branch per conservare `/emulator/`.
-
-Riferimenti: [v86](https://github.com/copy/v86), [configurazione Windows 9x](https://github.com/copy/v86/blob/master/docs/windows-9x.md).
+Prima del prossimo deploy React da `react-v1`, integrare il `keep_files: true` già preparato nella branch, per conservare `/emulator/` e i media.

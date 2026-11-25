@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "id": "cava-original-v1",
+  "emulatorVersion": "0.5.476",
+  "memorySize": 134217728,
+  "videoMemorySize": 8388608,
+  "hda": {
+    "url": "media/windows-cava-v1/.img.zst",
+    "size": 314572800,
+    "chunkSize": 262144
+  },
+  "cdrom": {
+    "url": "media/cava-f8cfdc7753c9/.img.zst",
+    "size": 645816320,
+    "chunkSize": 262144
+  },
+  "initialState": {
+    "url": "media/windows-cava-v1/cava-ready.bin.zst"
+  }
+}

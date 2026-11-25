@@ -16,6 +16,11 @@ await mkdir("dist/vendor", { recursive: true });
 await mkdir(".cache", { recursive: true });
 execFileSync(process.execPath, ["node_modules/typescript/bin/tsc", "--project", "tsconfig.json"], { stdio: "inherit" });
 for (const file of ["index.html", "style.css"]) await cp(file, `dist/${file}`);
+try {
+  await cp("archive.json", "dist/archive.json");
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
 for (const file of ["libv86.mjs", "v86.wasm", "v86-fallback.wasm"]) {
   await cp(`node_modules/v86/build/${file}`, `dist/vendor/${file}`);
 }
