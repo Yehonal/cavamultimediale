@@ -16,7 +16,23 @@ Il pacchetto contiene la copia di riferimento di **Cava de’ Tirreni Multimedia
 
 Il **25 novembre 2026** Joseph, titolare del progetto, ha confermato nella conversazione del progetto di disporre dei diritti sul CD e ha autorizzato la sua pubblicazione per l’esecuzione dell’applicazione originale nel browser. Questa nota registra la dichiarazione e l’autorizzazione ricevute.
 
-Windows resta separato: questo pacchetto e il relativo workflow non includono Windows. Questo documento non dichiara una licenza Windows né diritti di distribuzione dell’immagine OEM.
+Nella stessa conversazione del **25 novembre 2026**, Joseph ha confermato esplicitamente **anche l’autorizzazione Windows** e ha richiesto di pubblicare entrambi i componenti con avvio diretto. Il runtime Windows viene distribuito in un pacchetto separato dal CD. Questa nota registra la dichiarazione ricevuta; non cambia la licenza originale di Windows e non attribuisce diritti ulteriori ai visitatori.
+
+## Runtime Windows e stato pronto
+
+| Proprietà | Valore |
+|---|---|
+| Sistema | Windows 98, immagine di base della demo ufficiale v86 |
+| Dimensione base | `314572800` byte |
+| SHA-256 base | `a3325b93873934873a8f39501b9087b6d8e8d73eee8d97b69f1a41eeddea4f91` |
+| Dimensione stato Zstandard | `51595483` byte |
+| SHA-256 stato | `3ca79c73f61ebd9b2d9dc302619feba19c917aeae0b6b3fcd8db5174756ef800` |
+| Destinazione Pages | `emulator/media/windows-cava-3ca79c73f61e/` |
+| Configurazione | v86 `0.5.476`, RAM 128 MiB, VGA 8 MiB, 640 × 480 a 24 bit |
+
+La base Windows resta intatta. L’installazione Cava e il driver MIT **VMDisp9x 2D 1.2025.0.119b** sono nelle modifiche disco incorporate nello stato salvato. Il CD originale viene montato prima del ripristino; non servono floppy o dischi di installazione al visitatore.
+
+Il workflow `emulator-windows.yml` ricostruisce la base dagli stessi blocchi della demo v86, verifica il suo SHA-256 e la comprime con `package-media.py`. Ricompone poi lo stato dalle parti conservate in `runtime-state/cava-ready-3ca79c73/`, verificando ogni parte e il risultato completo. Provenienza, licenza MIT del driver e risultati del ripristino sono inclusi nel pacchetto pubblicato.
 
 ## Formato e verifica
 

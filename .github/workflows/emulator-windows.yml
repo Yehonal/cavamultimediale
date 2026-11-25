@@ -1,0 +1,79 @@
+name: Publish original Windows runtime
+
+on:
+  push:
+    branches: [emulator-poc]
+    paths:
+      - "emulator/runtime-state/**"
+      - "emulator/scripts/download-windows.py"
+      - "emulator/scripts/assemble-state.py"
+      - "emulator/scripts/package-media.py"
+      - "emulator/requirements-media.txt"
+      - ".github/workflows/emulator-windows.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: emulator-pages
+  cancel-in-progress: false
+
+jobs:
+  package-and-publish:
+    if: github.ref == 'refs/heads/emulator-poc'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CAVA_WINDOWS_SOURCE: ${{ github.workspace }}/.cava-source/windows98-base.img
+      CAVA_WINDOWS_PACKAGE: ${{ github.workspace }}/.cava-windows-package
+      CAVA_STATE_SOURCE: emulator/runtime-state/cava-ready-3ca79c73
+    steps:
+      - name: Check out the verified runtime
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: emulator
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: emulator/requirements-media.txt
+
+      - name: Install pinned media dependencies
+        run: python -m pip install -r emulator/requirements-media.txt
+
+      - name: Download and verify the Windows backing disk
+        run: python emulator/scripts/download-windows.py --output "$CAVA_WINDOWS_SOURCE"
+
+      - name: Package the unchanged backing disk
+        run: >-
+          python emulator/scripts/package-media.py
+          "$CAVA_WINDOWS_SOURCE" "$CAVA_WINDOWS_PACKAGE"
+          --expected-sha256 a3325b93873934873a8f39501b9087b6d8e8d73eee8d97b69f1a41eeddea4f91
+          --expected-size 314572800
+
+      - name: Reassemble and verify the ready application state
+        run: |
+          python emulator/scripts/assemble-state.py "$CAVA_STATE_SOURCE/manifest.json" "$CAVA_WINDOWS_PACKAGE/cava-ready.bin.zst"
+          cp "$CAVA_STATE_SOURCE/WINDOWS-SOURCE.json" "$CAVA_WINDOWS_PACKAGE/"
+          cp "$CAVA_STATE_SOURCE/VMDISP9X-LICENSE.txt" "$CAVA_WINDOWS_PACKAGE/"
+          cp "$CAVA_STATE_SOURCE/VMDISP9X-PROVENANCE.json" "$CAVA_WINDOWS_PACKAGE/"
+          cp "$CAVA_STATE_SOURCE/verification.json" "$CAVA_WINDOWS_PACKAGE/"
+
+      - name: Publish the complete Windows runtime
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ${{ env.CAVA_WINDOWS_PACKAGE }}
+          destination_dir: emulator/media/windows-cava-3ca79c73f61e
+          keep_files: true
+          commit_message: "Publish authorized Windows runtime with Cava ready"
+
+      - name: Request a GitHub Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${{ github.repository }}/pages/builds"

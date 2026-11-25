@@ -84,6 +84,7 @@ function controls(): void {
   audioButton.textContent = audioEnabled ? "Disattiva audio" : "Attiva audio";
   audioButton.setAttribute("aria-pressed", String(audioEnabled));
   pauseButton.textContent = emulator?.is_running() ? "Pausa" : "Riprendi";
+  pauseButton.dataset.paused = String(!emulator?.is_running());
 }
 
 function runningStatus(): void {

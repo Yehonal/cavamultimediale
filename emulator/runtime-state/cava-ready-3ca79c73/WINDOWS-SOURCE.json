@@ -1,0 +1,52 @@
+{
+  "source": "Official v86 Windows 98 demo backing disk",
+  "virtual_url": "https://i.copy.sh/windows98/.img",
+  "part_url_template": "https://i.copy.sh/windows98/{offset}-{end}.img",
+  "end_definition": "offset + chunk_size (exclusive)",
+  "logical_size": 314572800,
+  "chunk_size": 262144,
+  "chunk_count": 1200,
+  "sha256": "a3325b93873934873a8f39501b9087b6d8e8d73eee8d97b69f1a41eeddea4f91",
+  "verification": "All 1200 original parts materialized locally; full SHA-256 checked by package-media.py. Three public source parts fetched again and compared byte-for-byte.",
+  "verified_samples": [
+    {
+      "url": "https://i.copy.sh/windows98/0-262144.img",
+      "http_status": 200,
+      "bytes": 262144,
+      "sha256": "efddff0ea343a7f1bb99d96cea734607d18fadb38229bc5139c8c71198047e01",
+      "matches_local_base": true
+    },
+    {
+      "url": "https://i.copy.sh/windows98/157286400-157548544.img",
+      "http_status": 200,
+      "bytes": 262144,
+      "sha256": "65e01a5f15378fdac132a6d8dc225befa104b8f141a49479c2ba1b7d22f098ac",
+      "matches_local_base": true
+    },
+    {
+      "url": "https://i.copy.sh/windows98/314310656-314572800.img",
+      "http_status": 200,
+      "bytes": 262144,
+      "sha256": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90",
+      "matches_local_base": true
+    }
+  ],
+  "base_is_unmodified": true,
+  "overlay": "Installed CAVA and VMDisp9x changes are already embedded in the separate v86 saved state; do not merge them into this backing disk.",
+  "v86_version": "0.5.476",
+  "v86_commit": "9457e7a2f6890f3133bb6ac0f749e588f63c4c36",
+  "state": {
+    "file": "cava-ready.bin.zst",
+    "size": 51595483,
+    "sha256": "3ca79c73f61ebd9b2d9dc302619feba19c917aeae0b6b3fcd8db5174756ef800",
+    "ram_bytes": 134217728,
+    "vga_bytes": 8388608,
+    "display": {
+      "width": 640,
+      "height": 480,
+      "bits_per_pixel": 24
+    },
+    "requires_cd_attached_before_restore": true,
+    "cd_sha256": "f8cfdc7753c9d712750f13a2d4f60f6e6ff3796673b9342876d07f2dff284704"
+  }
+}

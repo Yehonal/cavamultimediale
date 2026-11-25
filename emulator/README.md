@@ -4,9 +4,9 @@ Lettore isolato basato su **v86 0.5.476**. Il percorso principale apre automatic
 
 ## Stato della pubblicazione
 
-- Il proprietario del progetto ha confermato il **25 novembre 2026** i diritti di pubblicazione del **CD originale**. Il CD è pubblicato in blocchi verificati: [provenienza, hash e procedura](MEDIA.md).
+- Il proprietario del progetto ha confermato il **25 novembre 2026** i diritti di pubblicazione del **CD originale e di Windows**, richiedendone l’avvio diretto. [Provenienza, autorizzazione, hash e procedura](MEDIA.md).
 - Il codice di avvio automatico legge `archive.json`, che indica i due dischi e lo stato iniziale. `archive.example.json` ne descrive il formato.
-- L’immagine Windows 98 delle prove ha una licenza **OEM**. Non è inclusa nel pacchetto CD; non è ancora stato confermato un diritto separato di ridistribuirla sul sito.
+- Windows 98, il CD e lo stato con Cava già avviata vengono pubblicati in percorsi versionati. La pagina presenta soltanto l’applicazione, i controlli essenziali e la dicitura **Software retrò degli anni ’90**.
 - In assenza di `archive.json`, il workflow compila ed esegue i test, conservando la pagina già pubblicata. La nuova interfaccia non viene distribuita con risorse mancanti.
 
 ## Sviluppo
@@ -49,7 +49,7 @@ I test eseguono un vero boot x86, pausa, salvataggio e ripristino con il runtime
 
 Nella prova privata con Windows 98 e VMDisp9x sono stati eseguiti l’introduzione video, la schermata principale originale e una sezione con testo scrollabile, con ritorno alla home. È stata configurata la modalità **640 × 480, 24 bit**. Il flusso audio ha prodotto campioni PCM, ma la qualità sonora non è stata ascoltata.
 
-Lo stato definitivo, compresso con Zstandard, è stato ripristinato in un processo nuovo con il runtime di produzione, il disco Windows di base e il CD originale. La schermata principale riappare direttamente a **640 × 480, 24 bit**; la CPU continua a eseguire e il flusso PCM riprende. Le parti statiche del panorama e del menu coincidono con la cattura precedente al salvataggio. Il checkpoint resta privato in attesa della conferma sui diritti Windows.
+Lo stato definitivo, compresso con Zstandard, è stato ripristinato in un processo nuovo con il runtime di produzione, il disco Windows di base e il CD originale. La schermata principale riappare direttamente a **640 × 480, 24 bit**; la CPU continua a eseguire e il flusso PCM riprende. Le parti statiche del panorama e del menu coincidono con la cattura precedente al salvataggio.
 
 Il controllo audio del lettore usa un gain separato dopo il mixer del sistema ospite. Disattivare il suono non sospende il clock audio: questo evita di bloccare le chiamate multimediali sincrone del programma originale.
 
@@ -57,6 +57,6 @@ Le prove non coprono ancora tutti i percorsi del titolo né il caricamento compl
 
 ## Deploy
 
-`emulator-pages.yml` compila e verifica il lettore su ogni modifica in `emulator-poc`, pubblicandolo in `gh-pages/emulator` quando esiste la configurazione completa. `emulator-cd.yml` pubblica il CD separatamente. Condividono il gruppo di concorrenza, preservano gli altri file del sito e usano il token integrato di GitHub con richiesta esplicita della build Pages.
+`emulator-pages.yml` compila e verifica il lettore su ogni modifica in `emulator-poc`, pubblicandolo in `gh-pages/emulator` quando esiste la configurazione completa. `emulator-cd.yml` pubblica il CD e `emulator-windows.yml` pubblica la base Windows e lo stato pronto. Condividono il gruppo di concorrenza, preservano gli altri file del sito e usano il token integrato di GitHub con richiesta esplicita della build Pages.
 
 Prima del prossimo deploy React da `react-v1`, integrare il `keep_files: true` già preparato nella branch, per conservare `/emulator/` e i media.

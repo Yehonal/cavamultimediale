@@ -1,0 +1,17 @@
+{
+  "name": "VMDisp9x 2D",
+  "version": "1.2025.0.119b",
+  "author": "JHRobotics",
+  "license": "MIT",
+  "license_file": "VMDISP9X-LICENSE.txt",
+  "license_sha256": "41e6fab05ff91d39589428630494817c9258af48d17b021378436a8cbd75b180",
+  "release_url": "https://github.com/JHRobotics/vmdisp9x/releases/tag/v1.2025.0.119",
+  "original_download_url": "https://github.com/JHRobotics/vmdisp9x/releases/download/v1.2025.0.119/vmdisp9x-1.2025.0.119b-driver-2d.img",
+  "original_download_size": 1474560,
+  "original_download_sha256": "96eed45b78672d94f8a90dfa7806dd95a71c2114d22c568ec857a07efd174a63",
+  "inf_sha256": "e38bb224f346ee10f52953a9a40a5a67718ad8aec45720c700e9a6a4e3ef4ab7",
+  "license_source_commit": "739eb72235cba62334f8b42448c9e9c87e7d2dd6",
+  "installed_adapter": "VESA ISA Adapter",
+  "location": "Installed driver files and registry settings are in the saved state HDA overlay, not in the unmodified backing disk.",
+  "package_scope": "2D driver package only; no VBEMP or Mesa3D package included."
+}
