@@ -30,10 +30,18 @@ for (const file of ["libv86.mjs", "v86.wasm", "v86-fallback.wasm"]) {
 const runtime = await readFile("dist/vendor/libv86.mjs", "utf8");
 const runtimeHash = createHash("sha256").update(runtime).digest("hex");
 const audioRestore = "this.sampling_rate=a[27]";
-if (runtimeHash !== "6027e988d9d891fadeb7799c2ad0b092c65f52dbd899e80e3a37afe068d7f2b7" || runtime.split(audioRestore).length !== 2) {
-  throw new Error("Unexpected v86 bundle: review the saved-audio-rate fix before publishing.");
+// Partfile reads must apply the restored copy-on-write overlay before copying
+// a downloaded chunk into the returned buffer. Upstream applies it afterwards,
+// so the first mixed read returns stale base sectors; subsequent reads differ.
+const partfileRead = "l.set(q,p*this.fixed_chunk_size);this.handle_read((g+p)*this.fixed_chunk_size,this.fixed_chunk_size|0,q)";
+const mergedPartfileRead = "this.handle_read((g+p)*this.fixed_chunk_size,this.fixed_chunk_size|0,q);l.set(q,p*this.fixed_chunk_size)";
+if (runtimeHash !== "6027e988d9d891fadeb7799c2ad0b092c65f52dbd899e80e3a37afe068d7f2b7"
+    || runtime.split(audioRestore).length !== 2 || runtime.split(partfileRead).length !== 2) {
+  throw new Error("Unexpected v86 bundle: review the audio restore and disk overlay fixes before publishing.");
 }
-await writeFile("dist/vendor/libv86.mjs", runtime.replace(audioRestore, "this.sampling_rate_change(a[27])"));
+await writeFile("dist/vendor/libv86.mjs", runtime
+  .replace(audioRestore, "this.sampling_rate_change(a[27])")
+  .replace(partfileRead, mergedPartfileRead));
 for (const [file, expectedHash] of Object.entries(biosFiles)) {
   const cache = path.join(".cache", `${revision}-${file}`);
   let data;
