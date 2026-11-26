@@ -2,6 +2,7 @@ import { V86, type EmulatorOptions } from "./vendor/libv86.mjs";
 import { parseArchive, type Archive } from "./hosted.js";
 import { syncAbsolutePointer, handleAbsoluteTouchMove, createAbsoluteTouchInput } from "./pointer.js";
 import { launchArchive } from "./launch.js";
+import "./info.js";
 
 function element<T extends HTMLElement>(id: string): T {
   const found = document.getElementById(id);

@@ -16,6 +16,7 @@ await mkdir("dist/vendor", { recursive: true });
 await mkdir(".cache", { recursive: true });
 execFileSync(process.execPath, ["node_modules/typescript/bin/tsc", "--project", "tsconfig.json"], { stdio: "inherit" });
 for (const file of ["index.html", "style.css"]) await cp(file, `dist/${file}`);
+await cp("assets", "dist/assets", { recursive: true });
 try {
   await cp("archive.json", "dist/archive.json");
 } catch (error) {
@@ -76,9 +77,14 @@ let app = await readFile("dist/app.js", "utf8");
 app = app.replace('"./vendor/libv86.mjs"', `"./vendor/libv86.mjs?v=${await version("vendor/libv86.mjs")}"`)
   .replace('"./hosted.js"', `"./hosted.js?v=${await version("hosted.js")}"`)
   .replace('"./pointer.js"', `"./pointer.js?v=${await version("pointer.js")}"`)
+  .replace('"./info.js"', `"./info.js?v=${await version("info.js")}"`)
   .replace('"./launch.js"', `"./launch.js?v=${await version("launch.js")}"`);
 await writeFile("dist/app.js", app);
 const html = await readFile("dist/index.html", "utf8");
-await writeFile("dist/index.html", html.replace('href="style.css"', `href="style.css?v=${await version("style.css")}"`)
+const infoMarker = "<!-- PROJECT_INFO_CONTENT -->";
+if (html.split(infoMarker).length !== 2) throw new Error("Expected one project information content slot.");
+const infoContent = await readFile("project-info.html", "utf8");
+await writeFile("dist/index.html", html.replace(infoMarker, () => infoContent)
+  .replace('href="style.css"', `href="style.css?v=${await version("style.css")}"`)
   .replace('src="app.js"', `src="app.js?v=${await version("app.js")}"`));
 console.log(`Emulator built in ${root}dist/ (v86 0.5.476, BIOS ${revision}).`);
