@@ -33,6 +33,14 @@ const report = {
 };
 let server, browser, page, cdp, serverLog = "", stage = "initializing";
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+async function bounded(promise, milliseconds) {
+  let timer;
+  try {
+    return await Promise.race([promise, new Promise((_, reject) => {
+      timer = setTimeout(() => reject(Error("Cleanup operation timed out")), milliseconds);
+    })]);
+  } finally { clearTimeout(timer); }
+}
 const state = () => page.evaluate(() => globalThis.__cavaQA.snapshot());
 function check(name, details = {}) {
   report.checks.push({ name, elapsedMs: Date.now() - started, ...details });
@@ -302,14 +310,18 @@ async function verify() {
   await menuHome();
 
   await page.setViewportSize({ width: 390, height: 844 });
+  const beforeTouchTime = (await state()).samples.at(-1)?.time ?? -1;
   const touchStart = await coordinates(300, 250), touchEnd = await coordinates(400, 270);
   await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ ...touchStart, id: 0 }] });
   await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ ...touchEnd, id: 0 }] });
   await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await delay(200);
   const touched = await state();
-  assert.ok(touched.samples.length > 0 && touched.samples.every(sample => sample.data.every(Number.isFinite)),
+  const touchSamples = touched.samples.filter(sample => sample.time > beforeTouchTime);
+  assert.ok(touchSamples.length >= 2 && touchSamples.every(sample => sample.data.every(Number.isFinite)),
     "Touchmove must not send NaN coordinates to VMware");
+  assert.ok(touchSamples.some(({ data }) => Math.abs(data[0] / data[2] * 640 - 400) <= 2
+    && Math.abs(data[1] / data[3] * 480 - 270) <= 2), "Touchmove must deliver the new absolute position");
   assert.ok(Number.isFinite(touched.mouse.x) && Number.isFinite(touched.mouse.y));
   check("touchmove-finite-absolute-position");
   await guest(570, 400, "touch"); await park();
@@ -339,19 +351,33 @@ async function verify() {
 }
 
 let watchdog;
+// Reserve the last 15 seconds for failure evidence and process cleanup. The
+// hard deadline also covers a stuck browser/CDP call while collecting evidence.
+const hardDeadline = setTimeout(() => {
+  report.passed = false;
+  report.failure = { stage, message: "Browser gate reached its total 5-minute limit" };
+  report.finishedAt = new Date().toISOString();
+  report.elapsedMs = Date.now() - started;
+  if (server) server.kill("SIGTERM");
+  fs.writeFileSync(path.join(args.output, "browser-verification.json"), JSON.stringify(report, null, 2) + "\n");
+  process.exit(1);
+}, Math.max(1, report.timeoutMs - (Date.now() - started)));
 try {
   await Promise.race([verify(), new Promise((_, reject) => {
-    watchdog = setTimeout(() => reject(Error(`Browser gate exceeded 5 minutes at: ${stage}`)), report.timeoutMs);
+    watchdog = setTimeout(() => reject(Error(`Browser gate exhausted its execution budget at: ${stage}`)),
+      Math.max(1, report.timeoutMs - 15_000 - (Date.now() - started)));
   })]);
 } catch (error) {
   report.failure = { stage, message: error.message, stack: error.stack };
   if (page && !page.isClosed()) {
-    try { await capture("failure"); } catch { /* Preserve the original error. */ }
+    try { await bounded(capture("failure"), 5000); } catch { /* Preserve the original error. */ }
   }
   process.exitCode = 1;
 } finally {
   clearTimeout(watchdog);
-  if (browser) await Promise.race([browser.close().catch(() => undefined), delay(5000)]);
+  if (browser) {
+    try { await bounded(browser.close(), 5000); } catch { /* The hard deadline bounds cleanup. */ }
+  }
   if (server) server.kill("SIGTERM");
   report.finishedAt = new Date().toISOString();
   report.elapsedMs = Date.now() - started;
@@ -360,4 +386,5 @@ try {
   console.log(report.passed ? "BROWSER_VERIFICATION_OK" : "BROWSER_VERIFICATION_FAILED",
     JSON.stringify({ elapsedMs: report.elapsedMs, failure: report.failure,
       report: path.join(args.output, "browser-verification.json") }));
+  clearTimeout(hardDeadline);
 }
