@@ -240,7 +240,18 @@ async function build() {
     ]);
     e.v86.cpu.devices.ide.primary.master.buffer.set_state([entries]);
     await e.run();
-    await until("Windows desktop after cold boot", () => {
+    let selectedNormalBoot = false;
+    await until("Windows desktop after cold boot", async () => {
+      // A checkpoint of a running Windows installation can retain the
+      // interrupted-boot flag. Explicitly choose Normal if its recovery menu
+      // appears; never capture the fallback Safe Mode desktop.
+      const text = e.screen_adapter.get_text_screen();
+      if (!selectedNormalBoot && /Windows 98 Startup Menu/i.test(text)
+          && /Normal/i.test(text) && /Safe mode/i.test(text)) {
+        selectedNormalBoot = true;
+        console.log("NATIVE_SELECT_NORMAL_BOOT");
+        await e.keyboard_send_scancodes([2, 130, 28, 156], 60);
+      }
       const v = e.v86.cpu.devices.vga;
       if (!v.svga_enabled || v.screen_width !== 640 || v.screen_height !== 480 || v.svga_bpp !== 24) return false;
       const rgba = frame(e).data;
