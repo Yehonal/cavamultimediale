@@ -252,6 +252,19 @@ async function verify() {
   assert.equal((await frame()).sha256, initial.frame.sha256, "Gate preserves the first intro frame");
   check("paused-first-frame");
 
+  const infoButton = page.getByRole("button", { name: "Info e crediti", exact: true });
+  const infoDialog = page.getByRole("dialog", { name: "Info e crediti", exact: true });
+  await infoButton.click();
+  assert.equal(await infoDialog.isVisible(), true);
+  await page.keyboard.press("Escape");
+  await page.locator("#project-info-dialog").waitFor({ state: "hidden" });
+  const afterInfoGate = await state();
+  assert.equal(afterInfoGate.activeElement, "project-info-button");
+  assert.equal(afterInfoGate.machines, initial.state.machines, "Project information must preserve the loaded guest");
+  assert.equal(afterInfoGate.instructions, initial.state.instructions, "Reading project information must not start the intro");
+  assert.equal((await frame()).sha256, initial.frame.sha256);
+  check("project-info-preserves-intro-gate-and-restores-focus");
+
   const introStarted = Date.now();
   await page.locator("#launch-button").click();
   await until("original intro starts", async () => (await state()).running);
@@ -338,6 +351,19 @@ async function verify() {
   await expectScene("commerce-en", "12-touch-english-commerce");
   await guest(180, 100, "touch"); await park();
   await expectScene("ceramics", "13-touch-ceramics");
+
+  const beforeInfoVisit = await state();
+  await infoButton.click();
+  await infoDialog.getByRole("link", { name: "Crediti", exact: true }).click();
+  assert.equal(await page.locator(".project-dialog-content").evaluate(element => element.scrollWidth <= element.clientWidth),
+    true, "Project information must fit the mobile viewport");
+  await infoDialog.getByRole("button", { name: "Chiudi le informazioni" }).click();
+  const afterInfoVisit = await state();
+  assert.equal(afterInfoVisit.machines, beforeInfoVisit.machines);
+  assert.equal(afterInfoVisit.running, true);
+  assert.equal(afterInfoVisit.clicks.length, beforeInfoVisit.clicks.length, "The modal must not send clicks to the guest");
+  await expectScene("ceramics", "14-after-project-info");
+  check("mobile-project-info-preserves-the-current-cd-page");
 
   const beforeRestart = await state();
   await page.locator("#restart-button").click();

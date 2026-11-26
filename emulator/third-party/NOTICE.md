@@ -19,7 +19,9 @@ The BSD license alternative is selected for Zstandard and its embedded FSE/HUF/x
 
 ## Pinned source and license URLs
 
-The distributed `libv86.mjs` has one local correction: `SB16.set_state` calls the existing `sampling_rate_change` method when restoring its saved sampling rate, before enabling the DAC. This keeps the browser audio adapter synchronized with a restored guest. `emulator/scripts/build.mjs` verifies the original bundle SHA-256 and applies this single replacement; the production snapshot-restore test covers the notification order. No guest program or saved-state format is modified.
+The distributed `libv86.mjs` has two local corrections. `SB16.set_state` calls the existing `sampling_rate_change` method when restoring its saved sampling rate, before enabling the DAC. This keeps the browser audio adapter synchronized with a restored guest. Partfile reads apply restored disk changes to each downloaded chunk before copying it into the returned buffer, so the first read includes the saved guest's changes.
+
+`emulator/scripts/build.mjs` verifies the original bundle SHA-256 before applying these two replacements. The snapshot-restore and disk-overlay tests cover their behavior. No guest program or saved-state format is modified.
 
 - [v86 source](https://github.com/copy/v86/tree/9457e7a2f6890f3133bb6ac0f749e588f63c4c36), [source archive](https://github.com/copy/v86/archive/9457e7a2f6890f3133bb6ac0f749e588f63c4c36.tar.gz), [npm runtime tarball](https://registry.npmjs.org/v86/-/v86-0.5.476.tgz).
 - [v86 BSD license](https://raw.githubusercontent.com/copy/v86/9457e7a2f6890f3133bb6ac0f749e588f63c4c36/LICENSE).
