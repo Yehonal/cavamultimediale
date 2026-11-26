@@ -1,0 +1,28 @@
+{
+  "name": "VBADOS",
+  "version": "0.67",
+  "license": "GPL-2.0-or-later",
+  "copyright": "Copyright (C) 2022 Javier S. Pedro",
+  "upstream": "https://git.javispedro.com/cgit/vbados.git/",
+  "distribution": {
+    "url": "https://depot.javispedro.com/vbox/vbados/vbados.zip",
+    "file": "drivers/vbados-0.67.zip",
+    "sha256": "824d74731d719ff4c8ca7914f6f93e554812fca3a9ef8c44317c1da728184d27"
+  },
+  "source": {
+    "commit": "37c2320920bf2de11749370396da23cab0aafa77",
+    "tree": "15219789f1d06fbca67d530d6741460a2b1a5ad2",
+    "mirror": "https://github.com/mrexodia/vbados",
+    "file": "sources/vbados-0.67-source.zip",
+    "sha256": "b2ba5a892b14dadc9c3dd51e1959199c2f6587756275b1bfd88872b3d3395880"
+  },
+  "configuration": {
+    "AUTOEXEC.BAT": [
+      "C:\\VBADOS\\VBMOUSE.EXE"
+    ],
+    "SYSTEM.INI": {
+      "boot.mouse.drv": "vbmouse.drv",
+      "386Enh.mouse": "*vmd"
+    }
+  }
+}

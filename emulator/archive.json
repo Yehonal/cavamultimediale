@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "id": "cava-original-3ca79c73f61e",
+  "id": "cava-intro-6484e388bdb1",
   "emulatorVersion": "0.5.476",
   "memorySize": 134217728,
   "videoMemorySize": 8388608,
@@ -15,6 +15,6 @@
     "chunkSize": 262144
   },
   "initialState": {
-    "url": "media/windows-cava-3ca79c73f61e/cava-ready.bin.zst"
+    "url": "media/states/cava-intro-6484e388bdb1/cava-ready.bin.zst"
   }
 }

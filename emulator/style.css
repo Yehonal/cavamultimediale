@@ -46,6 +46,10 @@ h1 { margin: 0; color: #9b9b9b; font-size: 12px; font-weight: 400; line-height: 
 /* v86 can apply a 2× inline size automatically. The host owns display scaling. */
 #screen-container canvas { display: block; width: 100% !important; height: 100% !important; max-width: 100%; max-height: 100%; transform: none !important; image-rendering: pixelated; }
 #screen-placeholder { position: absolute; inset: 0; background: #000; pointer-events: none; }
+#archive-start { position: absolute; inset: 0; display: grid; place-items: center; background: #000; }
+#launch-button { min-height: 44px; padding: 10px 18px; border: 1px solid #555; border-radius: 2px; background: #161616; color: #ddd; font-size: 13px; }
+#launch-button:enabled:hover { border-color: #888; background: #242424; }
+#launch-button:disabled { color: #777; }
 
 .status-block { margin-top: 12px; }
 .emulator-panel:has(#screen-placeholder[hidden]):has(#progress-bar[hidden]):has(#error-message[hidden]) .status-block { margin-top: 0; }

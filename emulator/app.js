@@ -1,5 +1,7 @@
-import { V86 } from "./vendor/libv86.mjs?v=9daf60689176";
+import { V86 } from "./vendor/libv86.mjs?v=4de591638938";
 import { parseArchive } from "./hosted.js?v=b8e508304d8a";
+import { syncAbsolutePointer, handleAbsoluteTouchMove, createAbsoluteTouchInput } from "./pointer.js?v=ef3fbc05e0c0";
+import { launchArchive } from "./launch.js?v=4dfa8ed587b8";
 function element(id) {
     const found = document.getElementById(id);
     if (!found)
@@ -20,6 +22,8 @@ const screen = element("screen-container");
 const progress = element("progress-bar");
 const errorMessage = element("error-message");
 const placeholder = element("screen-placeholder");
+const launchOverlay = element("archive-start");
+const launchButton = element("launch-button");
 const statusText = element("status-text");
 const statusDetail = element("status-detail");
 let emulator;
@@ -27,11 +31,13 @@ let mode = "archive";
 let ready = false;
 let busy = false;
 let demoPassed = false;
+let archiveStartPending = false;
 let activeDiskName = "windows";
 let rejectStartup;
 let archive;
 let audioPreference = "auto";
 const audioOutputs = new WeakMap();
+const touchInput = createAbsoluteTouchInput();
 async function hostedImages() {
     const url = new URL("archive.json", window.location.href);
     const response = await fetch(url, { cache: "no-cache", signal: AbortSignal.timeout(30_000) });
@@ -66,25 +72,34 @@ function showError(error) {
     errorMessage.hidden = false;
 }
 function controls() {
+    const awaitingStart = ready && mode === "archive" && archiveStartPending;
+    launchOverlay.hidden = !awaitingStart;
+    launchButton.disabled = busy || !awaitingStart;
+    screen.inert = awaitingStart;
     startButton.disabled = busy || !diskInput.files?.[0] || !cdInput.files?.[0];
     demoButton.disabled = busy;
     for (const input of [diskInput, cdInput, stateInput])
         input.disabled = busy;
     for (const button of [pauseButton, restartButton, fullscreenButton])
         button.disabled = busy || !ready;
+    pauseButton.disabled = busy || !ready || awaitingStart;
     restartButton.disabled = busy || (!ready && mode !== "archive");
     restartButton.textContent = mode === "archive" ? (ready ? "Ricomincia" : "Riprova") : "Riavvia";
     saveButton.disabled = busy || !ready || mode !== "windows";
     const audioOutput = emulator ? audioOutputs.get(emulator) : undefined;
-    audioButton.disabled = busy || !ready || !audioOutput || audioOutput.context.state === "closed";
+    audioButton.disabled = busy || !ready || awaitingStart || !audioOutput || audioOutput.context.state === "closed";
     const audioEnabled = audioOutput?.context.state === "running" && audioPreference !== "muted";
     audioButton.textContent = audioEnabled ? "Disattiva audio" : "Attiva audio";
     audioButton.setAttribute("aria-pressed", String(audioEnabled));
     pauseButton.textContent = emulator?.is_running() ? "Pausa" : "Riprendi";
     pauseButton.dataset.paused = String(!emulator?.is_running());
+    updatePointerInput();
 }
 function runningStatus() {
-    if (!emulator?.is_running()) {
+    if (mode === "archive" && archiveStartPending) {
+        status("Cava Multimediale è pronta", "Premi Avvia il CD per vedere l’introduzione dall’inizio.");
+    }
+    else if (!emulator?.is_running()) {
         status("Emulatore in pausa", "Premi Riprendi per continuare dalla stessa schermata.");
     }
     else if (mode === "demo") {
@@ -93,17 +108,29 @@ function runningStatus() {
             : "Avvio del disco di prova, senza Windows e senza il CD originale.");
     }
     else if (mode === "archive") {
-        status("Cava Multimediale", "Clicca nell’applicazione per iniziare la visita. Puoi attivare l’audio dai controlli.");
+        status("Cava Multimediale", "La visita è iniziata. Puoi gestire l’audio dai controlli.");
     }
     else {
         status("Computer virtuale avviato", "Attendi Windows, poi apri D:\\RUN\\RUN.EXE da Start → Esegui. Clicca nello schermo per usare mouse, tastiera e audio.");
     }
 }
+function updatePointerInput() {
+    // The v86 adapter limits mouse events to the screen. Hover should follow
+    // the pointer even when keyboard focus belongs to the host controls.
+    emulator?.mouse_set_enabled(ready && !busy && emulator.is_running() && document.hasFocus());
+}
 function captureInput(enabled) {
-    emulator?.keyboard_set_enabled(enabled);
-    emulator?.mouse_set_enabled(enabled);
+    if (!enabled)
+        touchInput.reset(emulator);
+    emulator?.keyboard_set_enabled(enabled && ready && !busy && emulator.is_running());
+    updatePointerInput();
 }
 async function dispose(machine) {
+    touchInput.reset(machine);
+    if (emulator === machine) {
+        archiveStartPending = false;
+        controls();
+    }
     const audioOutput = audioOutputs.get(machine);
     if (audioOutput)
         audioOutput.gain.gain.value = 0;
@@ -200,7 +227,9 @@ async function start(nextMode) {
     busy = true;
     errorMessage.hidden = true;
     controls();
-    status(nextMode === "archive" ? "Preparazione di Cava Multimediale" : "Caricamento dell’emulatore", "L’applicazione si avvierà appena il caricamento è completo.");
+    status(nextMode === "archive" ? "Preparazione di Cava Multimediale" : "Caricamento dell’emulatore", nextMode === "archive"
+        ? "Attendi il caricamento, poi premi Avvia il CD."
+        : "L’applicazione si avvierà appena il caricamento è completo.");
     progress.hidden = false;
     progress.removeAttribute("value");
     let replacing = false;
@@ -210,6 +239,7 @@ async function start(nextMode) {
                 : { fda: { url: "demo-boot.img" } };
         replacing = true;
         ready = false;
+        archiveStartPending = false;
         if (emulator)
             await dispose(emulator);
         emulator = undefined;
@@ -237,7 +267,8 @@ async function start(nextMode) {
         });
         emulator = current;
         captureInput(false);
-        void enableAudio();
+        if (mode !== "archive")
+            void enableAudio();
         // v86 does not abort pending WASM initialization in destroy(). Retired
         // instances must stay stopped and clean themselves up if loading finishes.
         current.add_listener("emulator-loaded", () => {
@@ -303,7 +334,10 @@ async function start(nextMode) {
             current.add_listener("download-error", downloadError);
         });
         attachAudioOutput(current);
-        await current.run();
+        if (mode === "archive")
+            archiveStartPending = true;
+        else
+            await current.run();
         ready = true;
         placeholder.hidden = true;
         captureInput(false);
@@ -313,6 +347,7 @@ async function start(nextMode) {
     catch (error) {
         if (replacing) {
             ready = false;
+            archiveStartPending = false;
             try {
                 if (emulator)
                     await dispose(emulator);
@@ -337,8 +372,39 @@ async function start(nextMode) {
 }
 startButton.addEventListener("click", () => { void start("windows"); });
 demoButton.addEventListener("click", () => { void start("demo"); });
+launchButton.addEventListener("click", async () => {
+    if (!emulator || mode !== "archive" || !archiveStartPending || busy || !ready)
+        return;
+    const current = emulator;
+    busy = true;
+    errorMessage.hidden = true;
+    controls();
+    captureInput(false);
+    try {
+        const started = await launchArchive(current, () => emulator === current && ready && archiveStartPending);
+        if (!started)
+            return;
+        archiveStartPending = false;
+        enforceAudioPreference();
+        runningStatus();
+    }
+    catch (error) {
+        if (emulator === current) {
+            showError(error);
+            status("Avvio del CD non riuscito", "Premi Avvia il CD per riprovare, oppure Ricomincia per ricaricarlo.");
+        }
+    }
+    finally {
+        if (emulator === current) {
+            busy = false;
+            controls();
+            if (!archiveStartPending)
+                pauseButton.focus({ preventScroll: true });
+        }
+    }
+});
 pauseButton.addEventListener("click", async () => {
-    if (!emulator || busy || !ready)
+    if (!emulator || busy || !ready || archiveStartPending)
         return;
     busy = true;
     controls();
@@ -453,19 +519,42 @@ audioButton.addEventListener("click", async () => {
     }
     controls();
 });
-screen.addEventListener("pointerdown", () => {
+screen.addEventListener("pointerdown", (event) => {
     if (!ready || busy)
         return;
-    screen.focus();
+    screen.focus({ preventScroll: true });
     captureInput(true);
+    if (touchInput.start(emulator, screen, event)) {
+        // Cancel the later compatibility mousedown/up pair. Those events arrive
+        // together after touchend and can be missed by the original guest program.
+        event.preventDefault();
+        screen.setPointerCapture(event.pointerId);
+    }
+    else
+        syncAbsolutePointer(emulator, screen, event);
     void enableAudio();
 });
+screen.addEventListener("pointerup", (event) => {
+    if (touchInput.end(event))
+        event.preventDefault();
+});
+screen.addEventListener("pointercancel", (event) => touchInput.cancel(event.pointerId));
+screen.addEventListener("lostpointercapture", (event) => touchInput.cancel(event.pointerId));
+screen.addEventListener("touchmove", (event) => {
+    if (ready && !busy)
+        handleAbsoluteTouchMove(emulator, screen, event);
+}, { passive: false });
 screen.addEventListener("focus", () => { if (ready && !busy)
     captureInput(true); });
 screen.addEventListener("keydown", () => { if (ready && !busy)
     void enableAudio(); });
 screen.addEventListener("blur", () => captureInput(false));
-window.addEventListener("blur", () => captureInput(false));
+window.addEventListener("blur", () => {
+    touchInput.reset(emulator);
+    emulator?.keyboard_set_enabled(false);
+    emulator?.mouse_set_enabled(false);
+});
+window.addEventListener("focus", updatePointerInput);
 window.addEventListener("keydown", (event) => {
     if (event.code !== "Escape" || !event.ctrlKey || !event.altKey || document.activeElement !== screen)
         return;

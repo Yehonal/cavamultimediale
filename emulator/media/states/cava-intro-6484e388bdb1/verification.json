@@ -1,0 +1,52 @@
+{
+  "createdAt": "2026-11-26T06:09:49.631Z",
+  "homeCoreSha256": "9df321fd5cbf1f4b3087f773acec91aee3b06aac6d98ad5cbbbf903f51dd5452",
+  "firstFrameSha256": "a8c3d394fda87db35ebad7cfbc1f6b5bf208b7d06704ff46201fccf2ee7b3687",
+  "resolution": [
+    640,
+    480,
+    24
+  ],
+  "absolutePoints": [
+    [
+      320,
+      240
+    ],
+    [
+      100,
+      100
+    ],
+    [
+      520,
+      350
+    ]
+  ],
+  "originalExecutableUnmodified": true,
+  "baseSha256": "a3325b93873934873a8f39501b9087b6d8e8d73eee8d97b69f1a41eeddea4f91",
+  "cdSha256": "f8cfdc7753c9d712750f13a2d4f60f6e6ff3796673b9342876d07f2dff284704",
+  "mouseConfiguration": {
+    "boot": "mouse.drv=vbmouse.drv",
+    "386Enh": "mouse=*vmd"
+  },
+  "verifiedAt": "2026-11-26T06:11:01.521Z",
+  "freshProcessRestore": true,
+  "firstFrameIdentical": true,
+  "absoluteMouse": true,
+  "sampleRate": 11025,
+  "introElapsedMs": 60029,
+  "audioFrames": 729796,
+  "audioPeak": 1,
+  "navigation": [
+    "Abbazia Benedettina",
+    "Abbey detail",
+    "Commercio & Artigianato",
+    "Ceramiche"
+  ],
+  "stateBytes": 96675708,
+  "stateSha256": "7b0e18b4673894a93567a453646d37e6c61f2d8a410c44b5ef37f18988d07f37",
+  "compressedState": {
+    "size": 39140521,
+    "sha256": "6484e388bdb1cba8b43fda49d514fedeca836dde7851c95b8769a3a2514e8f9d"
+  },
+  "cavaFilesUnchanged": 1028
+}

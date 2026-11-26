@@ -51,3 +51,7 @@ Both binaries are copied unchanged from the pinned v86 `bios/` directory. `seabi
 Copy this `NOTICE.md` to `dist/vendor/NOTICE.md` and the whole `licenses/` directory to `dist/vendor/licenses/`, preserving the relative links. Keep a visible credits/source link to this notice from the emulator page. The original texts were fetched from the pinned sources above; `licenses/SHA256SUMS.txt` records the supplied notice-file hashes.
 
 Applicability was checked against the npm package and the pinned v86 Makefile: the browser bundle includes the floppy implementation, and both WASM variants link SoftFloat and Zstandard. The v86 test suites and their separate licenses are not part of these runtime artifacts.
+
+## VBADOS absolute mouse driver
+
+VBMOUSE 0.67 by Javier S. Pedro is included in the guest checkpoint under GPL-2.0-or-later. The [license](licenses/LICENSE-VBADOS-GPL-2.0.txt), [unchanged official distribution](drivers/vbados-0.67.zip), [complete corresponding source](sources/vbados-0.67-source.zip), and [pinned provenance](VBADOS-PROVENANCE.json) are supplied here. Build the source with OpenWatcom and its included makefile (`wmake flp`). The source Git tree was verified against the author's v0.67 release.
