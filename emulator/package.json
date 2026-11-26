@@ -3,12 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test scripts/*.test.mjs",
     "serve": "node scripts/serve.mjs"
   },
-  "dependencies": { "v86": "0.5.476" },
-  "devDependencies": { "typescript": "5.9.3" }
+  "dependencies": {
+    "v86": "0.5.476"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "typescript": "5.9.3"
+  }
 }
