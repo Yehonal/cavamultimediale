@@ -66,7 +66,9 @@ async function version(file) {
 }
 let app = await readFile("dist/app.js", "utf8");
 app = app.replace('"./vendor/libv86.mjs"', `"./vendor/libv86.mjs?v=${await version("vendor/libv86.mjs")}"`)
-  .replace('"./hosted.js"', `"./hosted.js?v=${await version("hosted.js")}"`);
+  .replace('"./hosted.js"', `"./hosted.js?v=${await version("hosted.js")}"`)
+  .replace('"./pointer.js"', `"./pointer.js?v=${await version("pointer.js")}"`)
+  .replace('"./launch.js"', `"./launch.js?v=${await version("launch.js")}"`);
 await writeFile("dist/app.js", app);
 const html = await readFile("dist/index.html", "utf8");
 await writeFile("dist/index.html", html.replace('href="style.css"', `href="style.css?v=${await version("style.css")}"`)

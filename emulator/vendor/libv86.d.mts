@@ -28,6 +28,7 @@ interface Events {
   "emulator-loaded": void;
   "emulator-started": void;
   "emulator-stopped": void;
+  "vmware-absolute-mouse": boolean;
   "serial0-output-byte": number;
   "download-progress": { file_name: string; loaded: number; total: number; lengthComputable: boolean };
   "download-error": { file_name?: string };
@@ -46,6 +47,12 @@ export class V86 {
   keyboard_set_enabled(enabled: boolean): void;
   keyboard_send_scancodes(codes: number[]): Promise<void>;
   mouse_set_enabled(enabled: boolean): void;
+  absolute_pointer_enabled: boolean;
+  mouse_adapter?: { enabled: boolean; emu_enabled: boolean };
+  bus: {
+    send(name: "mouse-absolute", data: [number, number, number, number]): void;
+    send(name: "mouse-delta", data: [number, number]): void;
+  };
   speaker_adapter?: { audio_context?: AudioContext; mixer?: { node_merger?: ChannelMergerNode } };
   zstd_worker?: Worker | null;
 }
