@@ -77,14 +77,15 @@ let app = await readFile("dist/app.js", "utf8");
 app = app.replace('"./vendor/libv86.mjs"', `"./vendor/libv86.mjs?v=${await version("vendor/libv86.mjs")}"`)
   .replace('"./hosted.js"', `"./hosted.js?v=${await version("hosted.js")}"`)
   .replace('"./pointer.js"', `"./pointer.js?v=${await version("pointer.js")}"`)
-  .replace('"./info.js"', `"./info.js?v=${await version("info.js")}"`)
   .replace('"./launch.js"', `"./launch.js?v=${await version("launch.js")}"`);
 await writeFile("dist/app.js", app);
 const html = await readFile("dist/index.html", "utf8");
-const infoMarker = "<!-- PROJECT_INFO_CONTENT -->";
-if (html.split(infoMarker).length !== 2) throw new Error("Expected one project information content slot.");
-const infoContent = await readFile("project-info.html", "utf8");
-await writeFile("dist/index.html", html.replace(infoMarker, () => infoContent)
-  .replace('href="style.css"', `href="style.css?v=${await version("style.css")}"`)
+await writeFile("dist/index.html", html.replace('href="style.css"', `href="style.css?v=${await version("style.css")}"`)
   .replace('src="app.js"', `src="app.js?v=${await version("app.js")}"`));
+const infoHtml = await readFile("info.html", "utf8");
+const infoMarker = "<!-- PROJECT_INFO_CONTENT -->";
+if (infoHtml.split(infoMarker).length !== 2) throw new Error("Expected one project information content slot.");
+const infoContent = await readFile("project-info.html", "utf8");
+await writeFile("dist/info.html", infoHtml.replace(infoMarker, () => infoContent)
+  .replace('href="style.css"', `href="style.css?v=${await version("style.css")}"`));
 console.log(`Emulator built in ${root}dist/ (v86 0.5.476, BIOS ${revision}).`);

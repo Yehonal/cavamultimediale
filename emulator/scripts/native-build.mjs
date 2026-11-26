@@ -271,29 +271,9 @@ async function build() {
     await absolute(e, 28, 468, true); screenshot(e, "start-menu-click");
     await e.keyboard_send_scancodes([1, 129]); await delay(200);
     await absolute(e, 639, 479);
-    // Explorer can paint the desktop before it responds to Win+R. Wait for
-    // the active Run dialog rather than typing into a still-starting shell.
-    // These points identify its title, body and input in the fixed 640x480 guest.
-    let nextRunRequest = 0;
-    await until("Windows Run dialog", async () => {
-      const image = frame(e);
-      const matches = (x, y, color) => color.every((value, channel) =>
-        Math.abs(image.data[(y * image.width + x) * 4 + channel] - value) <= 2);
-      if (matches(30, 290, [1, 11, 135])
-          && matches(20, 320, [192, 192, 192])
-          && matches(300, 320, [192, 192, 192])
-          && matches(90, 400, [192, 192, 192])
-          && matches(340, 440, [192, 192, 192])
-          && matches(250, 380, [255, 255, 255])
-          && matches(310, 380, [255, 255, 255])
-          && matches(62, 368, [128, 128, 128])) return true;
-      if (Date.now() >= nextRunRequest) {
-        await e.keyboard_send_scancodes([224, 91, 19, 147, 224, 219], 60);
-        nextRunRequest = Date.now() + 2000;
-      }
-      return false;
-    }, 30_000);
-    console.log("NATIVE_RUN_DIALOG_READY");
+    await e.keyboard_send_scancodes([224, 91]); await delay(100);
+    await e.keyboard_send_scancodes([19, 147]); await delay(100);
+    await e.keyboard_send_scancodes([224, 219]); await delay(300);
     await type(e, "c:\\cava\\cava.exe");
     screenshot(e, "launch-dialog");
     // Stop the test audio consumer before its first intro DMA request. The

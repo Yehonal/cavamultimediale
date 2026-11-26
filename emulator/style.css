@@ -134,35 +134,32 @@ code { font-size: 11px; overflow-wrap: anywhere; }
 
 .project-credit-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 20px; margin-top: 12px; color: #999; font-size: 11px; line-height: 1.6; }
 .project-credit-line p { margin: 0; }
-.project-credit-line a, .project-credit-line button { text-decoration: underline; text-decoration-color: #666; text-underline-offset: 3px; }
-.project-credit-line button { min-height: 32px; padding: 5px 0; border: 0; background: transparent; color: inherit; font-size: inherit; }
-.project-credit-line a:hover, .project-credit-line button:hover { color: #ddd; text-decoration-color: currentColor; }
+.project-credit-line a { text-decoration: underline; text-decoration-color: #666; text-underline-offset: 3px; }
+.project-credit-line > a { display: inline-flex; align-items: center; min-height: 32px; padding: 5px 0; }
+.project-credit-line a:hover { color: #ddd; text-decoration-color: currentColor; }
 
-.project-dialog { width: min(760px, calc(100vw - 32px)); max-width: none; max-height: calc(100vh - 32px); max-height: min(880px, calc(100dvh - 32px)); margin: auto; padding: 0; overflow: hidden; border: 1px solid #424242; border-radius: 4px; background: #111; color: #d0d0d0; box-shadow: 0 16px 70px #0009; }
-.project-dialog[open] { display: flex; flex-direction: column; }
-.project-dialog::backdrop { background: #000c; }
-.project-dialog-header { flex: 0 0 auto; padding: 16px 24px 12px; border-bottom: 1px solid var(--line); background: #151515; }
-.project-dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.project-dialog-heading h2 { margin: 0; color: #eee; font-size: 17px; font-weight: 600; line-height: 1.5; }
-.project-dialog-heading h2:focus { outline: none; }
-#project-info-close { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; padding: 0; border: 1px solid #444; border-radius: 3px; background: transparent; color: #ccc; font-size: 24px; line-height: 1; }
-#project-info-close:hover { background: #292929; color: #fff; }
-.project-dialog-nav { display: flex; flex-wrap: wrap; gap: 2px 18px; margin-top: 10px; color: #b0b0b0; font-size: 11px; line-height: 1.6; }
-.project-dialog-nav a { display: inline-flex; align-items: center; min-height: 28px; text-decoration-color: #666; text-underline-offset: 3px; }
-.project-dialog-content { min-height: 0; padding: 24px; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #555 #111; font-size: 14px; line-height: 1.75; }
-.project-dialog-content section + section { margin-top: 32px; padding-top: 26px; border-top: 1px solid var(--line); }
-.project-dialog-content section { scroll-margin-top: 24px; }
-.project-dialog-content h3 { margin: 0 0 14px; color: #eee; font-size: 18px; font-weight: 600; line-height: 1.4; }
-.project-dialog-content h4 { margin: 24px 0 10px; color: #ddd; font-size: 14px; font-weight: 600; line-height: 1.5; }
-.project-dialog-content p { margin: 0 0 14px; }
-.project-dialog-content p:last-child { margin-bottom: 0; }
-.project-dialog-content a { text-decoration-color: #777; text-underline-offset: 3px; overflow-wrap: anywhere; }
-.project-dialog-content a:hover, .project-dialog-nav a:hover { color: #fff; text-decoration-color: currentColor; }
-.project-dialog-content ul { margin: 10px 0 16px; padding-left: 22px; }
-.project-dialog-content li + li { margin-top: 5px; }
-.project-dialog-content details { margin: 18px 0; }
-.project-dialog-content summary { color: #ddd; text-underline-offset: 3px; }
-.project-dialog-content details[open] > summary { margin-bottom: 16px; }
+body.info-document { display: block; }
+.info-page { width: 100%; max-width: 808px; margin: auto; padding: 40px 24px 64px; }
+.info-page-header { padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.info-back-link { display: inline-block; margin-bottom: 24px; color: #aaa; font-size: 12px; text-underline-offset: 3px; }
+.info-page-header h1 { color: #eee; font-size: 24px; font-weight: 600; letter-spacing: 0; }
+.info-page-content { padding-top: 24px; font-size: 15px; line-height: 1.75; }
+.info-page-content h2 { margin: 0 0 12px; color: #eee; font-size: 22px; font-weight: 600; line-height: 1.4; }
+.info-page-nav { display: flex; flex-wrap: wrap; gap: 2px 20px; margin-bottom: 28px; color: #b0b0b0; font-size: 12px; line-height: 1.6; }
+.info-page-nav a { display: inline-flex; align-items: center; min-height: 36px; text-decoration-color: #666; text-underline-offset: 3px; }
+.info-page-content section + section { margin-top: 32px; padding-top: 26px; border-top: 1px solid var(--line); }
+.info-page-content section { scroll-margin-top: 24px; }
+.info-page-content h3 { margin: 0 0 14px; color: #eee; font-size: 18px; font-weight: 600; line-height: 1.4; }
+.info-page-content h4 { margin: 24px 0 10px; color: #ddd; font-size: 15px; font-weight: 600; line-height: 1.5; }
+.info-page-content p { margin: 0 0 14px; }
+.info-page-content p:last-child { margin-bottom: 0; }
+.info-page-content a { text-decoration-color: #777; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.info-page-content a:hover, .info-back-link:hover { color: #fff; text-decoration-color: currentColor; }
+.info-page-content ul { margin: 10px 0 16px; padding-left: 22px; }
+.info-page-content li + li { margin-top: 5px; }
+.info-page-content details { margin: 18px 0; }
+.info-page-content summary { color: #ddd; text-underline-offset: 3px; }
+.info-page-content details[open] > summary { margin-bottom: 16px; }
 .info-note { color: #aaa; font-size: 12px; }
 .info-quote { margin: 16px 0; padding: 0 0 0 18px; border-left: 2px solid #555; color: #bbb; }
 .info-quote cite, .info-quote footer { display: block; margin-top: 14px; color: #aaa; font-size: 12px; font-style: normal; }
@@ -187,13 +184,10 @@ code { font-size: 11px; overflow-wrap: anywhere; }
   .file-grid .field-hint { min-height: 0; }
   .advanced-content { padding: 14px; }
   .project-credit-line { gap: 0 16px; margin-top: 8px; font-size: 10px; }
-  .project-credit-line button { min-height: 44px; }
-  .project-dialog { width: calc(100vw - 20px); max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); }
-  .project-dialog-header { padding: 12px 16px 10px; }
-  .project-dialog-heading h2 { font-size: 16px; }
-  .project-dialog-nav { column-gap: 16px; margin-top: 8px; }
-  .project-dialog-content { padding: 20px 16px; font-size: 13px; }
-  .project-dialog-content h3 { font-size: 17px; }
+  .project-credit-line > a { min-height: 44px; }
+  .info-page { padding: 24px 16px 40px; }
+  .info-page-header h1 { font-size: 21px; }
+  .info-page-nav { column-gap: 16px; }
   .info-cover-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .info-credits-list { gap: 14px; }
   .info-credits-list > div { grid-template-columns: minmax(0, 1fr); }
