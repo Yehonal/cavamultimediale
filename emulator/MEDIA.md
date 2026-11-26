@@ -18,21 +18,25 @@ Il **25 novembre 2026** Joseph, titolare del progetto, ha confermato nella conve
 
 Nella stessa conversazione del **25 novembre 2026**, Joseph ha confermato esplicitamente **anche l’autorizzazione Windows** e ha richiesto di pubblicare entrambi i componenti con avvio diretto. Il runtime Windows viene distribuito in un pacchetto separato dal CD. Questa nota registra la dichiarazione ricevuta; non cambia la licenza originale di Windows e non attribuisce diritti ulteriori ai visitatori.
 
-## Runtime Windows e stato pronto
+## Runtime Windows e stato sorgente
 
 | Proprietà | Valore |
 |---|---|
 | Sistema | Windows 98, immagine di base della demo ufficiale v86 |
 | Dimensione base | `314572800` byte |
 | SHA-256 base | `a3325b93873934873a8f39501b9087b6d8e8d73eee8d97b69f1a41eeddea4f91` |
-| Dimensione stato Zstandard | `51595483` byte |
-| SHA-256 stato | `3ca79c73f61ebd9b2d9dc302619feba19c917aeae0b6b3fcd8db5174756ef800` |
-| Destinazione Pages | `emulator/media/windows-cava-3ca79c73f61e/` |
+| Dimensione stato sorgente Zstandard | `51595483` byte |
+| SHA-256 stato sorgente | `3ca79c73f61ebd9b2d9dc302619feba19c917aeae0b6b3fcd8db5174756ef800` |
+| Destinazione base e stato sorgente | `emulator/media/windows-cava-3ca79c73f61e/` |
 | Configurazione | v86 `0.5.476`, RAM 128 MiB, VGA 8 MiB, 640 × 480 a 24 bit |
 
 La base Windows resta intatta. L’installazione Cava e il driver MIT **VMDisp9x 2D 1.2025.0.119b** sono nelle modifiche disco incorporate nello stato salvato. Il CD originale viene montato prima del ripristino; non servono floppy o dischi di installazione al visitatore.
 
 Il workflow `emulator-windows.yml` ricostruisce la base dagli stessi blocchi della demo v86, verifica il suo SHA-256 e la comprime con `package-media.py`. Ricompone poi lo stato dalle parti conservate in `runtime-state/cava-ready-3ca79c73/`, verificando ogni parte e il risultato completo. Provenienza, licenza MIT del driver e risultati del ripristino sono inclusi nel pacchetto pubblicato.
+
+Lo stato sorgente si apreva sulla home. La pubblicazione corrente viene ricostruita da `emulator-pages.yml`: `native-prepare.py` applica le modifiche disco a una copia temporanea e installa **VBMOUSE 0.67**; `native-build.mjs` avvia Windows e salva il primo fotogramma dell’introduzione prima del primo blocco PCM. L’overlay rimane riferito alla base originale e i 1028 file Cava vengono verificati invariati. Configurazione mouse, licenza GPL-2.0-or-later e sorgenti sono descritti nel [README](README.md#preparare-larchivio-completo) e nei [crediti](third-party/NOTICE.md#vbados-absolute-mouse-driver).
+
+`native-package.py` comprime lo stato verificato in `emulator/media/states/cava-intro-<sha256-prefix>/` e aggiorna `archive.json`. `release.json` indica percorso e SHA-256 effettivi; il pacchetto contiene provenienza, licenze, sorgenti del driver, `verification.json` e screenshot. Pagina e stato vengono pubblicati insieme dopo il ripristino in un processo nuovo, l’introduzione completa e il collaudo nel browser. L’esecuzione resta ferma al primo fotogramma finché il visitatore preme **Avvia il CD**, così audio e introduzione partono insieme.
 
 ## Formato e verifica
 
