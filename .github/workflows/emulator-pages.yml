@@ -98,7 +98,8 @@ jobs:
         run: |
           export CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable)"
           test -n "$CHROME_PATH"
-          node emulator/scripts/browser-verify.mjs --base "$CAVA_INPUTS/windows98-base.img" --cd "$CAVA_INPUTS/CAVA.iso" --state "$CAVA_NATIVE/cava-ready.bin" --dist emulator/dist --output "$CAVA_NATIVE/browser"
+          CAVA_TEST_STATE="$(python -c 'import json; from pathlib import Path; p=Path("emulator/dist"); print(p / json.loads((p / "release.json").read_text())["state"])')"
+          node emulator/scripts/browser-verify.mjs --base "$CAVA_INPUTS/windows98-base.img" --cd "$CAVA_INPUTS/CAVA.iso" --state "$CAVA_TEST_STATE" --dist emulator/dist --output "$CAVA_NATIVE/browser"
 
       - name: Publish the page and checkpoint together
         uses: peaceiris/actions-gh-pages@v4
@@ -120,6 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: original-cd-failure-evidence
+          include-hidden-files: true
           path: |
             .cava-native/*.json
             .cava-native/*.png
