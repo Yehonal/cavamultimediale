@@ -1,6 +1,6 @@
 import { V86, type EmulatorOptions } from "./vendor/libv86.mjs";
 import { parseArchive, type Archive } from "./hosted.js";
-import { syncAbsolutePointer, handleAbsoluteTouchMove } from "./pointer.js";
+import { syncAbsolutePointer, handleAbsoluteTouchMove, createAbsoluteTouchInput } from "./pointer.js";
 import { launchArchive } from "./launch.js";
 
 function element<T extends HTMLElement>(id: string): T {
@@ -40,6 +40,7 @@ let rejectStartup: ((error: Error) => void) | undefined;
 let archive: Archive | undefined;
 let audioPreference: "auto" | "enabled" | "muted" = "auto";
 const audioOutputs = new WeakMap<V86, { context: AudioContext; gain: GainNode; merger: ChannelMergerNode }>();
+const touchInput = createAbsoluteTouchInput();
 
 async function hostedImages(): Promise<Pick<EmulatorOptions, "hda" | "cdrom" | "initial_state" | "memory_size" | "vga_memory_size">> {
   const url = new URL("archive.json", window.location.href);
@@ -121,11 +122,13 @@ function updatePointerInput(): void {
 }
 
 function captureInput(enabled: boolean): void {
+  if (!enabled) touchInput.reset(emulator);
   emulator?.keyboard_set_enabled(enabled && ready && !busy && emulator.is_running());
   updatePointerInput();
 }
 
 async function dispose(machine: V86): Promise<void> {
+  touchInput.reset(machine);
   if (emulator === machine) {
     archiveStartPending = false;
     controls();
@@ -459,9 +462,19 @@ screen.addEventListener("pointerdown", (event) => {
   if (!ready || busy) return;
   screen.focus({ preventScroll: true });
   captureInput(true);
-  syncAbsolutePointer(emulator, screen, event);
+  if (touchInput.start(emulator, screen, event)) {
+    // Cancel the later compatibility mousedown/up pair. Those events arrive
+    // together after touchend and can be missed by the original guest program.
+    event.preventDefault();
+    screen.setPointerCapture(event.pointerId);
+  } else syncAbsolutePointer(emulator, screen, event);
   void enableAudio();
 });
+screen.addEventListener("pointerup", (event) => {
+  if (touchInput.end(event)) event.preventDefault();
+});
+screen.addEventListener("pointercancel", (event) => touchInput.cancel(event.pointerId));
+screen.addEventListener("lostpointercapture", (event) => touchInput.cancel(event.pointerId));
 screen.addEventListener("touchmove", (event) => {
   if (ready && !busy) handleAbsoluteTouchMove(emulator, screen, event);
 }, { passive: false });
@@ -469,6 +482,7 @@ screen.addEventListener("focus", () => { if (ready && !busy) captureInput(true);
 screen.addEventListener("keydown", () => { if (ready && !busy) void enableAudio(); });
 screen.addEventListener("blur", () => captureInput(false));
 window.addEventListener("blur", () => {
+  touchInput.reset(emulator);
   emulator?.keyboard_set_enabled(false);
   emulator?.mouse_set_enabled(false);
 });

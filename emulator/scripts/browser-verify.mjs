@@ -95,7 +95,17 @@ async function coordinates(x, y) {
 async function guest(x, y, action = "click") {
   const point = await coordinates(x, y);
   if (action === "move") await page.mouse.move(point.x, point.y);
-  else if (action === "touch") await page.touchscreen.tap(point.x, point.y);
+  else if (action === "touch") {
+    const before = (await state()).clicks.length;
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ ...point, id: 0 }] });
+    await delay(100);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    const clicks = (await state()).clicks.slice(before);
+    assert.deepEqual(clicks.map(event => event.data), [[true, false, false], [false, false, false]],
+      "One real touch must produce exactly one guest down/up pair, without a compatibility duplicate");
+    assert.ok(clicks[1].time - clicks[0].time >= 80, "Guest press must follow the real finger lifetime");
+    check("touch-single-click-lifecycle", { x, y, heldMs: clicks[1].time - clicks[0].time });
+  }
   else if (action === "first-click") {
     // A trusted down/up without a preceding move exercises pointerdown sync.
     await cdp.send("Input.dispatchMouseEvent", { type: "mousePressed", ...point,

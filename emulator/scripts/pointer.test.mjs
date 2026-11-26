@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { syncAbsolutePointer, handleAbsoluteTouchMove } from "../dist/pointer.js";
+import { syncAbsolutePointer, handleAbsoluteTouchMove, createAbsoluteTouchInput } from "../dist/pointer.js";
 
 function fixture(rect = { left: 100, top: 60, width: 640, height: 480 }) {
   const events = [];
@@ -111,6 +111,70 @@ test("touch fallback remains native until the guest enables absolute mode", () =
   const event = touch([{ clientX: 260, clientY: 180 }]);
   assert.equal(handleAbsoluteTouchMove(machine, screen, event), false);
   assert.equal(event.stopped, false); assert.equal(event.prevented, false); assert.deepEqual(events, []);
+});
+
+const finger = (changes = {}) => ({ pointerType: "touch", pointerId: 7, isPrimary: true,
+  clientX: 260, clientY: 180, ...changes });
+
+test("absolute touch presses at pointerdown and releases at pointerup exactly once", () => {
+  const { machine, screen, events } = fixture(), input = createAbsoluteTouchInput();
+  assert.equal(input.start(machine, screen, finger()), true);
+  assert.deepEqual(events, [
+    { name: "mouse-absolute", data: [160, 120, 640, 480] },
+    { name: "mouse-delta", data: [1, 0] },
+    { name: "mouse-click", data: [true, false, false] },
+  ]);
+  assert.equal(input.end(finger({ clientX: 420, clientY: 300 })), true);
+  assert.deepEqual(events.slice(3), [
+    { name: "mouse-absolute", data: [320, 240, 640, 480] },
+    { name: "mouse-delta", data: [1, 0] },
+    { name: "mouse-click", data: [false, false, false] },
+  ]);
+  assert.equal(input.end(finger()), false);
+  assert.equal(input.cancel(7), false);
+  assert.equal(events.length, 6);
+});
+
+test("touch cancel and lost capture release the active button without another click", () => {
+  const { machine, screen, events } = fixture(), input = createAbsoluteTouchInput();
+  input.start(machine, screen, finger());
+  assert.equal(input.cancel(8), false);
+  assert.equal(input.cancel(7), true);
+  assert.equal(input.cancel(7), false);
+  assert.equal(input.end(finger()), false);
+  assert.deepEqual(events.filter(event => event.name === "mouse-click").map(event => event.data),
+    [[true, false, false], [false, false, false]]);
+});
+
+test("pause, blur and replacement cleanup cannot leave a touch held in the old machine", () => {
+  for (const globalReset of [false, true]) {
+    const { machine, screen, events } = fixture(), input = createAbsoluteTouchInput();
+    input.start(machine, screen, finger());
+    input.reset(fixture().machine);
+    assert.equal(events.length, 3, "Retiring another machine must not release the active one");
+    machine.is_running = () => false;
+    input.reset(globalReset ? undefined : machine);
+    input.reset(machine);
+    assert.equal(input.end(finger()), false);
+    assert.deepEqual(events.filter(event => event.name === "mouse-click").map(event => event.data),
+      [[true, false, false], [false, false, false]]);
+  }
+});
+
+test("touch lifecycle leaves relative and mouse input native and ignores additional fingers", () => {
+  const { machine, screen, events } = fixture(), input = createAbsoluteTouchInput();
+  machine.absolute_pointer_enabled = false;
+  assert.equal(input.start(machine, screen, finger()), false);
+  machine.absolute_pointer_enabled = true;
+  assert.equal(input.start(machine, screen, finger({ pointerType: "mouse" })), false);
+  assert.deepEqual(events, []);
+  input.start(machine, screen, finger());
+  assert.equal(input.start(machine, screen, finger({ pointerId: 8, isPrimary: false })), true);
+  assert.equal(input.end(finger({ pointerId: 8 })), false);
+  assert.equal(events.length, 3);
+  input.end(finger());
+  assert.deepEqual(events.filter(event => event.name === "mouse-click").map(event => event.data),
+    [[true, false, false], [false, false, false]]);
 });
 
 test("pinned v86 queues a PS/2 notification for absolute position before native clicks", { timeout: 30_000 }, async () => {

@@ -7,6 +7,7 @@ export interface PointerMachine {
   bus: {
     send(name: "mouse-absolute", data: [number, number, number, number]): void;
     send(name: "mouse-delta", data: [number, number]): void;
+    send(name: "mouse-click", data: [boolean, boolean, boolean]): void;
   };
 }
 
@@ -17,6 +18,11 @@ interface PointerSample {
   changedTouches?: ArrayLike<Point>;
 }
 type Screen = Pick<HTMLElement, "getBoundingClientRect" | "ownerDocument">;
+interface TouchPointer extends PointerSample {
+  pointerId: number;
+  pointerType: string;
+  isPrimary?: boolean;
+}
 
 function canSynchronize(machine: PointerMachine | undefined, screen: Screen): machine is PointerMachine {
   return !!machine?.absolute_pointer_enabled
@@ -60,4 +66,38 @@ export function handleAbsoluteTouchMove(
   if (event.cancelable) event.preventDefault();
   syncAbsolutePointer(machine, screen, event);
   return true;
+}
+
+/** Deliver the real touch lifetime instead of a same-task compatibility click. */
+export function createAbsoluteTouchInput() {
+  let active: { machine: PointerMachine; screen: Screen; pointerId: number } | undefined;
+  function release(): boolean {
+    if (!active) return false;
+    const current = active;
+    active = undefined;
+    current.machine.bus.send("mouse-click", [false, false, false]);
+    return true;
+  }
+  return {
+    start(machine: PointerMachine | undefined, screen: Screen, event: TouchPointer): boolean {
+      if (event.pointerType !== "touch" || !canSynchronize(machine, screen)) return false;
+      // A second finger must not create another press or move the first one.
+      if (active || event.isPrimary === false) return true;
+      if (!syncAbsolutePointer(machine, screen, event)) return false;
+      active = { machine, screen, pointerId: event.pointerId };
+      machine.bus.send("mouse-click", [true, false, false]);
+      return true;
+    },
+    end(event: TouchPointer): boolean {
+      if (!active || event.pointerId !== active.pointerId) return false;
+      syncAbsolutePointer(active.machine, active.screen, event);
+      return release();
+    },
+    cancel(pointerId: number): boolean {
+      return active?.pointerId === pointerId ? release() : false;
+    },
+    reset(machine?: PointerMachine): void {
+      if (!machine || active?.machine === machine) release();
+    },
+  };
 }

@@ -52,6 +52,7 @@ export class V86 {
   bus: {
     send(name: "mouse-absolute", data: [number, number, number, number]): void;
     send(name: "mouse-delta", data: [number, number]): void;
+    send(name: "mouse-click", data: [boolean, boolean, boolean]): void;
   };
   speaker_adapter?: { audio_context?: AudioContext; mixer?: { node_merger?: ChannelMergerNode } };
   zstd_worker?: Worker | null;
