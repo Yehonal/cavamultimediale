@@ -1,4 +1,4 @@
-name: Publish emulator proof of concept
+name: Publish original CD with verified intro and pointer
 
 on:
   push:
@@ -20,12 +20,17 @@ jobs:
   build-and-publish:
     if: github.ref == 'refs/heads/emulator-poc'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: emulator
+    timeout-minutes: 30
+    env:
+      CAVA_INPUTS: ${{ github.workspace }}/.cava-inputs
+      CAVA_PREPARED: ${{ github.workspace }}/.cava-prepared
+      CAVA_NATIVE: ${{ github.workspace }}/.cava-native
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
-      - name: Check out the proof of concept
+      - name: Check out source
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: emulator
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -34,30 +39,68 @@ jobs:
           cache: npm
           cache-dependency-path: emulator/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            emulator/requirements-media.txt
+            emulator/requirements-native.txt
 
-      - name: Build the standalone emulator
-        run: npm run build
+      - name: Install pinned dependencies
+        run: |
+          npm ci --prefix emulator
+          python -m pip install -r emulator/requirements-native.txt
 
-      - name: Test the emulator
-        run: npm test
+      - name: Build and test the host page
+        run: |
+          npm run build --prefix emulator
+          npm test --prefix emulator
 
-      - name: Check for the complete archive configuration
-        id: archive
+      - name: Verify the existing shared disk archive
         env:
           CAVA_PUBLIC_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/emulator/
-        run: |
-          if test -f archive.json; then
-            node scripts/check-archive.mjs
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Automatic launch is built and tested. Keep the existing site until the complete archive is configured." >> "$GITHUB_STEP_SUMMARY"
-          fi
+        run: node emulator/scripts/check-archive.mjs
 
-      - name: Publish to the emulator subdirectory
-        if: steps.archive.outputs.ready == 'true'
+      - name: Download verified original inputs
+        run: |
+          python emulator/scripts/download-windows.py --output "$CAVA_INPUTS/windows98-base.img" --workers 16
+          python emulator/scripts/download-cd.py --output "$CAVA_INPUTS/CAVA.iso"
+          python emulator/scripts/assemble-state.py emulator/runtime-state/cava-ready-3ca79c73/manifest.json "$CAVA_INPUTS/cava-original.bin.zst"
+
+      - name: Install the absolute mouse in a disposable guest overlay
+        run: >-
+          python emulator/scripts/native-prepare.py
+          --base "$CAVA_INPUTS/windows98-base.img"
+          --state "$CAVA_INPUTS/cava-original.bin.zst"
+          --drivers emulator/third-party/drivers/vbados-0.67.zip
+          --output "$CAVA_PREPARED"
+
+      - name: Capture the intro and verify a fresh native restore
+        run: >-
+          node emulator/scripts/native-build.mjs
+          --runtime emulator/dist/vendor
+          --base "$CAVA_INPUTS/windows98-base.img"
+          --cd "$CAVA_INPUTS/CAVA.iso"
+          --reference-state "$CAVA_INPUTS/cava-original.bin.zst"
+          --overlay "$CAVA_PREPARED/base-overlay.bin"
+          --output "$CAVA_NATIVE"
+
+      - name: Package the verified checkpoint and original-source notices
+        run: >-
+          python emulator/scripts/native-package.py
+          --output "$CAVA_NATIVE"
+          --prepare-report "$CAVA_PREPARED/prepare-report.json"
+          --dist emulator/dist
+
+      - name: Verify the original experience in Chrome
+        run: |
+          export CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable)"
+          test -n "$CHROME_PATH"
+          node emulator/scripts/browser-verify.mjs --base "$CAVA_INPUTS/windows98-base.img" --cd "$CAVA_INPUTS/CAVA.iso" --state "$CAVA_NATIVE/cava-ready.bin" --dist emulator/dist --output "$CAVA_NATIVE/browser"
+
+      - name: Publish the page and checkpoint together
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -65,11 +108,20 @@ jobs:
           publish_dir: ./emulator/dist
           destination_dir: emulator
           keep_files: true
-          commit_message: "Publish emulator proof of concept"
+          commit_message: "Publish original intro and absolute mouse after native and browser checks"
 
-      # Commits made with GITHUB_TOKEN do not automatically trigger Pages.
       - name: Request a GitHub Pages build
-        if: steps.archive.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api --method POST "repos/${{ github.repository }}/pages/builds"
+
+      - name: Retain diagnostic evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-cd-failure-evidence
+          path: |
+            .cava-native/*.json
+            .cava-native/*.png
+            .cava-native/browser/
+          retention-days: 3
